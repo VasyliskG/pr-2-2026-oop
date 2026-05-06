@@ -1,0 +1,35 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+.flattened-pom.xml
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (уникаємо рекурсивного включення)
+docker-compose.yml
+docker-compose.*.yml
+
+# Тимчасові файли
+*.log
+*.tmp
+storage/
+*.swp
+*.bak
+
+# Документація (не потрібна у контейнері)
+*.md
+docs/
