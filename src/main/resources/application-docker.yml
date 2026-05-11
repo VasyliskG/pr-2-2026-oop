@@ -1,0 +1,24 @@
+# =============================================================================
+# Профіль для запуску в Docker-контейнері
+# Активується через SPRING_PROFILES_ACTIVE=docker
+# =============================================================================
+
+spring:
+  datasource:
+    # Хост 'db' — назва сервісу в docker-compose.yml
+    url: jdbc:postgresql://db:5432/student_collab
+    username: collab_user
+    password: collab_secret
+    hikari:
+      pool-name: DockerHikariPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    root: INFO
+    ua.uzhnu.collab: INFO

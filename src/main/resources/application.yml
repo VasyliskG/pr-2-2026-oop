@@ -1,0 +1,40 @@
+# =============================================================================
+# Конфігурація застосунку: Student Collab Platform
+# =============================================================================
+
+spring:
+  application:
+    name: student-collab-platform
+
+  # ---- Підключення до PostgreSQL ----
+  datasource:
+    url: jdbc:postgresql://localhost:5432/student_collab
+    username: collab_user
+    password: ${DB_PASSWORD:collab_secret}
+    driver-class-name: org.postgresql.Driver
+
+    # ---- HikariCP Connection Pool ----
+    hikari:
+      pool-name: CollabHikariPool
+      minimum-idle: 2
+      maximum-pool-size: 10
+      idle-timeout: 300000        # 5 хвилин
+      max-lifetime: 600000        # 10 хвилин
+      connection-timeout: 20000   # 20 секунд
+      leak-detection-threshold: 30000
+      connection-test-query: SELECT 1
+      auto-commit: false
+
+  # ---- Ініціалізація схеми (для розробки) ----
+  sql:
+    init:
+      mode: never                  # DDL і DML виконуються вручну
+
+# =============================================================================
+# Логування
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    ua.uzhnu.collab: DEBUG
+    com.zaxxer.hikari: INFO
