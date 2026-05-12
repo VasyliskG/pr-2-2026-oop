@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<!--
+    Екран реєстрації: поля логін, email, повне ім'я, пароль.
+    Контролер: RegisterController.
+-->
+<VBox alignment="CENTER" spacing="14"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ua.uzhnu.collab.controller.RegisterController"
+      styleClass="login-container">
+    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+    <Text text="Реєстрація" styleClass="app-title"/>
+
+    <Region prefHeight="10"/>
+
+    <Label text="Ім'я користувача" styleClass="field-label"/>
+    <TextField fx:id="txtUsername" promptText="username (від 3 символів)" styleClass="input-field"/>
+
+    <Label text="Повне ім'я" styleClass="field-label"/>
+    <TextField fx:id="txtFullName" promptText="Прізвище Ім'я По-батькові" styleClass="input-field"/>
+
+    <Label text="Електронна пошта" styleClass="field-label"/>
+    <TextField fx:id="txtEmail" promptText="email@example.com" styleClass="input-field"/>
+
+    <Label text="Пароль" styleClass="field-label"/>
+    <PasswordField fx:id="txtPassword" promptText="мінімум 6 символів" styleClass="input-field"/>
+
+    <Label fx:id="lblError" styleClass="error-label" wrapText="true"/>
+
+    <Button fx:id="btnRegister" text="Зареєструватися" onAction="#handleRegister"
+            styleClass="btn-primary" maxWidth="Infinity"/>
+
+    <ProgressIndicator fx:id="spinner" visible="false" prefWidth="32" prefHeight="32"/>
+
+    <Hyperlink text="Вже маєте обліковий запис? Увійти"
+               onAction="#handleGoToLogin" styleClass="link"/>
+</VBox>

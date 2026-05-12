@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<!--
+    Екран входу: поля логін/пароль, кнопка входу, перехід до реєстрації.
+    Контролер: LoginController (Spring-managed).
+-->
+<VBox alignment="CENTER" spacing="16"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ua.uzhnu.collab.controller.LoginController"
+      styleClass="login-container">
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+    <!-- Заголовок -->
+    <Text text="Student Collab" styleClass="app-title"/>
+    <Text text="Платформа командної роботи" styleClass="app-subtitle"/>
+
+    <Region prefHeight="20"/>
+
+    <!-- Поля введення -->
+    <Label text="Ім'я користувача" styleClass="field-label"/>
+    <TextField fx:id="txtUsername" promptText="username" styleClass="input-field"/>
+
+    <Label text="Пароль" styleClass="field-label"/>
+    <PasswordField fx:id="txtPassword" promptText="••••••••" styleClass="input-field"/>
+
+    <!-- Повідомлення про помилку -->
+    <Label fx:id="lblError" styleClass="error-label" wrapText="true"/>
+
+    <!-- Кнопка входу -->
+    <Button fx:id="btnLogin" text="Увійти" onAction="#handleLogin"
+            styleClass="btn-primary" maxWidth="Infinity"/>
+
+    <!-- Індикатор завантаження -->
+    <ProgressIndicator fx:id="spinner" visible="false" prefWidth="32" prefHeight="32"/>
+
+    <Region prefHeight="10"/>
+
+    <!-- Перехід до реєстрації -->
+    <Hyperlink text="Немає облікового запису? Зареєструватися"
+               onAction="#handleGoToRegister" styleClass="link"/>
+</VBox>
