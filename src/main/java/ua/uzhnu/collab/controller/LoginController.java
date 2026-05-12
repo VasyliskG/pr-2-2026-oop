@@ -10,7 +10,7 @@ import ua.uzhnu.collab.dto.Dtos.UserDto;
 import ua.uzhnu.collab.viewmodel.LoginViewModel;
 
 /**
- * FXML-контролер екрану входу.
+ * FXML-контролер екрана входу.
  *
  * <p>Відповідає за біндінг елементів інтерфейсу до {@link LoginViewModel} та обробку подій
  * (натискання кнопок, Enter). Контролер є «тонким»: вся логіка делегується ViewModel.

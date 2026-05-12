@@ -24,7 +24,6 @@ import ua.uzhnu.collab.enums.TaskStatus;
 import ua.uzhnu.collab.service.FileService;
 import ua.uzhnu.collab.service.TaskService;
 import ua.uzhnu.collab.service.TeamService;
-import ua.uzhnu.collab.service.UserService;
 
 /**
  * Контролер діалогу детального перегляду та редагування задачі.

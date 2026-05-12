@@ -11,7 +11,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
