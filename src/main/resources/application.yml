@@ -5,12 +5,15 @@
 spring:
   application:
     name: student-collab-platform
+  config:
+    import: optional:file:.env[.properties]
 
-  # ---- Підключення до PostgreSQL ----
+
+  # ---- Підключення до Supabase (PostgreSQL) ----
   datasource:
-    url: jdbc:postgresql://localhost:5432/student_collab
-    username: collab_user
-    password: ${DB_PASSWORD:collab_secret}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
     # ---- HikariCP Connection Pool ----
@@ -24,6 +27,10 @@ spring:
       leak-detection-threshold: 30000
       connection-test-query: SELECT 1
       auto-commit: false
+      data-source-properties:
+        ssl: true
+        sslmode: verify-ca
+        sslrootcert: /home/g/.postgresql/root.crt
 
   # ---- Ініціалізація схеми (для розробки) ----
   sql:

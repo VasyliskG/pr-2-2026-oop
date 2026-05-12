@@ -3,6 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+.env
 
 ### IntelliJ IDEA ###
 .idea
@@ -35,4 +36,12 @@ build/
 ### Mac OS ###
 .DS_Store
 
-.env
+### AI ###
+.mcp.json
+skills-lock.json
+.agents
+.claude
+
+### SSL certificates ###
+*.crt
+*.key
