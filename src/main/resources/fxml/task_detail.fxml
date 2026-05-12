@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Діалог детального перегляду/редагування задачі.
+    Контролер: TaskDetailController.
+-->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ua.uzhnu.collab.controller.TaskDetailController"
+            prefWidth="700" prefHeight="620" styleClass="task-detail">
+
+    <!-- Заголовок -->
+    <top>
+        <VBox styleClass="toolbar" spacing="4">
+            <padding><Insets top="12" right="16" bottom="8" left="16"/></padding>
+
+            <!-- Режим перегляду -->
+            <VBox fx:id="viewPane" spacing="4">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label fx:id="lblTitle" styleClass="task-detail-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Редагувати" onAction="#handleToggleEdit"
+                            styleClass="btn-secondary"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label fx:id="lblStatus"/>
+                    <Label fx:id="lblPriority"/>
+                    <Label fx:id="lblDueDate" styleClass="stats-label"/>
+                    <Label fx:id="lblOverdue" style="-fx-text-fill: #c0392b;"/>
+                </HBox>
+                <Label fx:id="lblCreator" styleClass="stats-label"/>
+            </VBox>
+
+            <!-- Режим редагування -->
+            <VBox fx:id="editPane" spacing="8" visible="false" managed="false">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtEditTitle" promptText="Назва задачі"
+                               HBox.hgrow="ALWAYS" styleClass="input-field"/>
+                </HBox>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Статус:"/>
+                    <ComboBox fx:id="cbEditStatus"/>
+                    <Label text="Пріоритет:"/>
+                    <ComboBox fx:id="cbEditPriority"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Зберегти" onAction="#handleSaveEdit" styleClass="btn-primary"/>
+                    <Button text="Скасувати" onAction="#handleCancelEdit" styleClass="btn-secondary"/>
+                </HBox>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Дедлайн:"/>
+                    <DatePicker fx:id="dpEditDueDate" promptText="дд.мм.рррр"/>
+                    <TextField fx:id="txtEditDueTime" promptText="HH:mm" prefWidth="70"
+                               styleClass="input-field"/>
+                    <Button text="✕ Очистити" onAction="#handleClearDueDate"
+                            style="-fx-padding: 4 8;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </top>
+
+    <!-- Основний вміст -->
+    <center>
+        <SplitPane dividerPositions="0.55" orientation="VERTICAL">
+
+            <!-- Верхня частина: опис + виконавці -->
+            <VBox spacing="8">
+                <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
+
+                <Label text="Опис" styleClass="section-title"/>
+                <TextArea fx:id="txtDescription" wrapText="true" editable="false"
+                          VBox.vgrow="ALWAYS" prefRowCount="4"/>
+
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Виконавці" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="+ Додати виконавців" onAction="#handleAddAssignee"
+                            styleClass="btn-primary"/>
+                </HBox>
+                <ListView fx:id="listAssignees" prefHeight="90"/>
+            </VBox>
+
+            <!-- Нижня частина: коментарі + файли (TabPane) -->
+            <TabPane tabClosingPolicy="UNAVAILABLE">
+                <Tab text="Коментарі">
+                    <VBox spacing="8">
+                        <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
+                        <ListView fx:id="listComments" VBox.vgrow="ALWAYS"/>
+                        <HBox spacing="8">
+                            <TextField fx:id="txtNewComment"
+                                       promptText="Написати коментар..."
+                                       HBox.hgrow="ALWAYS" styleClass="chat-input"/>
+                            <Button text="Додати" onAction="#handleAddComment"
+                                    styleClass="btn-primary"/>
+                        </HBox>
+                    </VBox>
+                </Tab>
+                <Tab text="Файли">
+                    <VBox spacing="8">
+                        <padding><Insets top="8" right="12" bottom="8" left="12"/></padding>
+                        <HBox spacing="8">
+                            <Button text="Завантажити файл" onAction="#handleUploadFile"
+                                    styleClass="btn-primary"/>
+                        </HBox>
+                        <ListView fx:id="listFiles" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                </Tab>
+            </TabPane>
+        </SplitPane>
+    </center>
+</BorderPane>
