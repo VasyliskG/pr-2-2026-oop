@@ -135,6 +135,42 @@ public class TeamService {
     log.info("Видалено учасника {} з команди id={}", member.getUser().getUsername(), teamId);
   }
 
+  /**
+   * Виходить з команди (self-service).
+   *
+   * @throws CollabException якщо це останній OWNER
+   */
+  @Transactional
+  public void leaveTeam(Long teamId, Long userId) {
+    TeamMember member =
+        memberRepository
+            .findByIdTeamIdAndIdUserId(teamId, userId)
+            .orElseThrow(() -> new EntityNotFoundException("Учасник команди", userId));
+
+    if (member.getRole() == TeamRole.OWNER) {
+      long ownerCount = memberRepository.countByIdTeamIdAndRole(teamId, TeamRole.OWNER);
+      if (ownerCount <= 1) {
+        throw new CollabException("Неможливо покинути команду — ви єдиний власник. Передайте роль іншому або видаліть команду.");
+      }
+    }
+
+    memberRepository.delete(member);
+    log.info("Користувач {} покинув команду id={}", member.getUser().getUsername(), teamId);
+  }
+
+  /**
+   * Видаляє команду разом з усіма даними.
+   *
+   * @throws AccessDeniedException якщо ініціатор не є OWNER
+   */
+  @Transactional
+  public void deleteTeam(Long teamId, Long initiatorId) {
+    requireOwner(teamId, initiatorId);
+    Team team = findTeamById(teamId);
+    teamRepository.delete(team);
+    log.info("Команду '{}' (id={}) видалено власником id={}", team.getName(), teamId, initiatorId);
+  }
+
   /** Змінює роль учасника. */
   @Transactional
   public TeamMemberDto changeRole(Long teamId, Long userId, TeamRole newRole, Long initiatorId) {

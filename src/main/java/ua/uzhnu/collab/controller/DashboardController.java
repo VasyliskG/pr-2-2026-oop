@@ -60,6 +60,40 @@ public class DashboardController {
               }
             });
 
+    // Контекстне меню: вийти / видалити команду
+    ContextMenu ctxMenu = new ContextMenu();
+    MenuItem miLeave = new MenuItem("Покинути команду");
+    MenuItem miDelete = new MenuItem("Видалити команду");
+    ctxMenu.getItems().addAll(miLeave, miDelete);
+
+    miLeave.setOnAction(e -> {
+      TeamDto selected = listTeams.getSelectionModel().getSelectedItem();
+      if (selected == null) return;
+      boolean confirmed = dialogs.showConfirmation(
+          "Покинути команду",
+          "Ви впевнені, що хочете покинути команду \"" + selected.name() + "\"?");
+      if (!confirmed) return;
+      var task = viewModel.leaveTeamTask(selected.id());
+      task.setOnSucceeded(ev -> viewModel.getTeams().remove(selected));
+      task.setOnFailed(ev -> dialogs.showError("Помилка", task.getException().getMessage()));
+      new Thread(task).start();
+    });
+
+    miDelete.setOnAction(e -> {
+      TeamDto selected = listTeams.getSelectionModel().getSelectedItem();
+      if (selected == null) return;
+      boolean confirmed = dialogs.showConfirmation(
+          "Видалити команду",
+          "Видалити команду \"" + selected.name() + "\"? Усі задачі, файли та чат будуть втрачені.");
+      if (!confirmed) return;
+      var task = viewModel.deleteTeamTask(selected.id());
+      task.setOnSucceeded(ev -> viewModel.getTeams().remove(selected));
+      task.setOnFailed(ev -> dialogs.showError("Помилка", task.getException().getMessage()));
+      new Thread(task).start();
+    });
+
+    listTeams.setContextMenu(ctxMenu);
+
     // Подвійний клік — відкрити команду
     listTeams.setOnMouseClicked(
         e -> {

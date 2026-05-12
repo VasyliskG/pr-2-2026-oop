@@ -86,4 +86,28 @@ public class DashboardViewModel {
   public void onTeamCreated(TeamDto team) {
     teams.add(team);
   }
+
+  /** Покинути команду (поточний користувач). */
+  public Task<Void> leaveTeamTask(Long teamId) {
+    Long userId = sessionContext.getCurrentUserId();
+    return new Task<>() {
+      @Override
+      protected Void call() {
+        teamService.leaveTeam(teamId, userId);
+        return null;
+      }
+    };
+  }
+
+  /** Видалити команду (тільки OWNER). */
+  public Task<Void> deleteTeamTask(Long teamId) {
+    Long userId = sessionContext.getCurrentUserId();
+    return new Task<>() {
+      @Override
+      protected Void call() {
+        teamService.deleteTeam(teamId, userId);
+        return null;
+      }
+    };
+  }
 }
