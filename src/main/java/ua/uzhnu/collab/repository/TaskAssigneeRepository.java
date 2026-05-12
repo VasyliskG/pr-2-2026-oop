@@ -12,6 +12,12 @@ import ua.uzhnu.collab.entity.TaskAssignee;
 import ua.uzhnu.collab.entity.TaskAssigneeId;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code task_assignees}.
+ *
+ * <p>Зберігає зв'язки між задачами та виконавцями.
+ * {@code save} використовує {@code ON CONFLICT DO NOTHING} — повторне призначення ігнорується.
+ */
 @Repository
 @RequiredArgsConstructor
 public class TaskAssigneeRepository {

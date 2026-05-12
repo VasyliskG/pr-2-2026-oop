@@ -13,6 +13,12 @@ import ua.uzhnu.collab.entity.Task;
 import ua.uzhnu.collab.entity.TaskComment;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code task_comments}.
+ *
+ * <p>Коментарі повертаються у хронологічному порядку ({@code ORDER BY created_at ASC}).
+ * {@code countByTaskId} використовується для відображення лічильника у канбан-картці.
+ */
 @Repository
 @RequiredArgsConstructor
 public class TaskCommentRepository {

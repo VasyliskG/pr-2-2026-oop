@@ -13,6 +13,13 @@ import ua.uzhnu.collab.entity.ChatMessage;
 import ua.uzhnu.collab.entity.Team;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code chat_messages}.
+ *
+ * <p>Підтримує пагінацію ({@code page}, {@code pageSize}), отримання кореневих повідомлень
+ * та відповідей ({@code findByParentMessageIdOrderByCreatedAtAsc}).
+ * Кожне повідомлення підтягує автора та батьківське повідомлення одним запитом через LEFT JOIN.
+ */
 @Repository
 @RequiredArgsConstructor
 public class ChatMessageRepository {

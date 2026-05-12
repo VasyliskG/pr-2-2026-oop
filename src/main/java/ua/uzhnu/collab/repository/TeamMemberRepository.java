@@ -15,6 +15,13 @@ import ua.uzhnu.collab.entity.TeamMemberId;
 import ua.uzhnu.collab.entity.User;
 import ua.uzhnu.collab.enums.TeamRole;
 
+/**
+ * Репозиторій для роботи з таблицею {@code team_members}.
+ *
+ * <p>{@code save} використовує {@code ON CONFLICT DO UPDATE SET role} — дозволяє оновлювати
+ * роль учасника без видалення запису. {@code countByIdTeamIdAndRole} застосовується
+ * для захисту останнього OWNER від видалення.
+ */
 @Repository
 @RequiredArgsConstructor
 public class TeamMemberRepository {
