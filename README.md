@@ -87,6 +87,10 @@ Student Collab Platform — JavaFX-застосунок із Spring Boot бек�
 
 ---
 
+## Завантаження
+
+[Реліз програми](https://github.com/VasyliskG/pr-2-2026-oop/releases)
+
 ## Збірка та запуск
 
 ### Вимоги
