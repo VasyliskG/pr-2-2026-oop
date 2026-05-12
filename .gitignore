@@ -44,4 +44,5 @@ skills-lock.json
 
 ### SSL certificates ###
 *.crt
+!prod-ca-2021.crt
 *.key
