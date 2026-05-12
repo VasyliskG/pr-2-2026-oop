@@ -30,7 +30,7 @@ spring:
       data-source-properties:
         ssl: true
         sslmode: verify-ca
-        sslrootcert: /home/g/.postgresql/root.crt
+        sslrootcert: ${app.ssl.cert:${user.home}/.postgresql/root.crt}
 
   # ---- Ініціалізація схеми (для розробки) ----
   sql:
