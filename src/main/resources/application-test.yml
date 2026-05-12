@@ -1,0 +1,28 @@
+# =============================================================================
+# Конфігурація для тестового профілю.
+# Підключається до ЛОКАЛЬНОГО PostgreSQL (той самий сервер, що й у production,
+# але окрема база collab_test).
+#
+# Одноразовий setup:
+#   psql -U collab_user -c "CREATE DATABASE collab_test OWNER collab_user;"
+# =============================================================================
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/collab_test
+    username: collab_user
+    password: collab_secret
+    driver-class-name: org.postgresql.Driver
+
+  # Spring Boot виконує schema.sql перед кожним тестовим прогоном.
+  # Файл містить DROP + CREATE, тож база завжди у чистому стані.
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:test-db/schema.sql
+
+logging:
+  level:
+    root: WARN
+    ua.uzhnu.collab: INFO
+    com.zaxxer.hikari: WARN
