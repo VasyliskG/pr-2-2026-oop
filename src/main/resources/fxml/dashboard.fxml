@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Дашборд: список команд користувача, створення нової, вихід.
+    Контролер: DashboardController.
+-->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ua.uzhnu.collab.controller.DashboardController"
+            styleClass="dashboard-container">
+
+    <!-- Верхня панель -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="toolbar">
+            <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+            <Label fx:id="lblWelcome" styleClass="welcome-label"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Оновити" onAction="#handleRefresh" styleClass="btn-secondary"/>
+            <Button text="Вийти" onAction="#handleLogout" styleClass="btn-danger"/>
+        </HBox>
+    </top>
+
+    <!-- Центр: список команд -->
+    <center>
+        <VBox spacing="12" styleClass="content-area">
+            <padding><Insets top="16" right="24" bottom="16" left="24"/></padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Мої команди" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblTeamCount" text="Команд: 0" styleClass="stats-label"/>
+                <Button text="+ Створити команду" onAction="#handleCreateTeam"
+                        styleClass="btn-primary"/>
+            </HBox>
+
+            <ListView fx:id="listTeams" VBox.vgrow="ALWAYS" styleClass="team-list"/>
+
+            <HBox alignment="CENTER">
+                <ProgressIndicator fx:id="spinner" visible="false"
+                                   prefWidth="36" prefHeight="36"/>
+            </HBox>
+
+            <Button text="Відкрити команду" onAction="#handleOpenTeam"
+                    styleClass="btn-primary" maxWidth="Infinity"/>
+        </VBox>
+    </center>
+</BorderPane>
