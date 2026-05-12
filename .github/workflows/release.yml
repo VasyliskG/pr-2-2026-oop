@@ -31,7 +31,6 @@ jobs:
         run: |
           mkdir -p target/app-input
           cp target/student-collab-platform-*.jar target/app-input/
-          cp prod-ca-2021.crt target/app-input/
 
       - name: Create Windows installer
         shell: bash
@@ -49,7 +48,6 @@ jobs:
             --java-options "-Dspring.datasource.url=${{ secrets.DB_URL }}" \
             --java-options "-Dspring.datasource.username=${{ secrets.DB_USER }}" \
             --java-options "-Dspring.datasource.password=${{ secrets.DB_PASSWORD }}" \
-            --java-options "-Dapp.ssl.cert=\$APPDIR/prod-ca-2021.crt" \
             --type exe \
             --dest target/dist
 
@@ -83,7 +81,6 @@ jobs:
         run: |
           mkdir -p target/app-input
           cp target/student-collab-platform-*.jar target/app-input/
-          cp prod-ca-2021.crt target/app-input/
 
       - name: Create macOS installer
         shell: bash
@@ -101,7 +98,6 @@ jobs:
             --java-options "-Dspring.datasource.url=${{ secrets.DB_URL }}" \
             --java-options "-Dspring.datasource.username=${{ secrets.DB_USER }}" \
             --java-options "-Dspring.datasource.password=${{ secrets.DB_PASSWORD }}" \
-            --java-options "-Dapp.ssl.cert=\$APPDIR/prod-ca-2021.crt" \
             --type dmg \
             --dest target/dist
 
@@ -133,7 +129,6 @@ jobs:
         run: |
           mkdir -p target/app-input
           cp target/student-collab-platform-*.jar target/app-input/
-          cp prod-ca-2021.crt target/app-input/
 
       - name: Create Linux installer
         run: |
@@ -150,7 +145,6 @@ jobs:
             --java-options "-Dspring.datasource.url=${{ secrets.DB_URL }}" \
             --java-options "-Dspring.datasource.username=${{ secrets.DB_USER }}" \
             --java-options "-Dspring.datasource.password=${{ secrets.DB_PASSWORD }}" \
-            --java-options "-Dapp.ssl.cert=\$APPDIR/prod-ca-2021.crt" \
             --type deb \
             --dest target/dist
 
