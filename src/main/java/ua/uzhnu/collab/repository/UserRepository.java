@@ -11,6 +11,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code users}.
+ *
+ * <p>Забезпечує пошук за {@code username} та {@code email}, перевірку унікальності,
+ * а також повнотекстовий пошук за іменем та логіном.
+ */
 @Repository
 @RequiredArgsConstructor
 public class UserRepository {

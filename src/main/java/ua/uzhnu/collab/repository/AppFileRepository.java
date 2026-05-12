@@ -14,6 +14,13 @@ import ua.uzhnu.collab.entity.Task;
 import ua.uzhnu.collab.entity.Team;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code files}.
+ *
+ * <p>Підтримує отримання файлів за командою, задачею або спільного простору
+ * (без прив'язки до задачі). Агрегатні методи {@code sumFileSizeByTeamId}
+ * та {@code countByTeamId} використовуються для статистики на дашборді.
+ */
 @Repository
 @RequiredArgsConstructor
 public class AppFileRepository {

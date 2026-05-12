@@ -12,6 +12,12 @@ import org.springframework.stereotype.Repository;
 import ua.uzhnu.collab.entity.Team;
 import ua.uzhnu.collab.entity.User;
 
+/**
+ * Репозиторій для роботи з таблицею {@code teams}.
+ *
+ * <p>Підтримує пошук команд за учасником ({@code findByUserId}) та
+ * фрагментом назви ({@code findByNameContainingIgnoreCase}).
+ */
 @Repository
 @RequiredArgsConstructor
 public class TeamRepository {

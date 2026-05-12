@@ -15,6 +15,13 @@ import ua.uzhnu.collab.entity.User;
 import ua.uzhnu.collab.enums.TaskPriority;
 import ua.uzhnu.collab.enums.TaskStatus;
 
+/**
+ * Репозиторій для роботи з таблицею {@code tasks}.
+ *
+ * <p>Реалізує CRUD-операції та спеціалізовані запити через {@link NamedParameterJdbcTemplate}.
+ * Усі запити повертають повністю ініціалізовані об'єкти {@link ua.uzhnu.collab.entity.Task}
+ * з підтягнутими {@code team} та {@code createdBy}.
+ */
 @Repository
 @RequiredArgsConstructor
 public class TaskRepository {
