@@ -110,6 +110,25 @@ public class DialogHelper {
     return chooser.showOpenDialog(owner);
   }
 
+  /**
+   * Діалог збереження файлу.
+   *
+   * @param owner вікно-власник
+   * @param defaultName ім'я файлу за замовчуванням
+   * @param ext розширення без крапки, наприклад "pdf" або "xlsx"
+   * @return обраний файл або null при скасуванні
+   */
+  public File showSaveFileDialog(Window owner, String defaultName, String ext) {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Зберегти файл");
+    chooser.setInitialFileName(defaultName);
+    String description = ext.equalsIgnoreCase("pdf") ? "PDF документ" : "Excel таблиця";
+    chooser
+        .getExtensionFilters()
+        .add(new FileChooser.ExtensionFilter(description, "*." + ext.toLowerCase()));
+    return chooser.showSaveDialog(owner);
+  }
+
   /** Діалог підтвердження дії. */
   public boolean showConfirmation(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
