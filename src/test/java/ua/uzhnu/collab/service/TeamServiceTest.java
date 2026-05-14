@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,9 @@ import ua.uzhnu.collab.dto.Dtos.TeamCreateDto;
 import ua.uzhnu.collab.dto.Dtos.TeamDto;
 import ua.uzhnu.collab.dto.Dtos.TeamMemberDto;
 import ua.uzhnu.collab.dto.Dtos.TeamStatsDto;
+import ua.uzhnu.collab.dto.Dtos.UserWorkloadDto;
+import ua.uzhnu.collab.entity.Task;
+import ua.uzhnu.collab.entity.TeamMemberId;
 import ua.uzhnu.collab.entity.*;
 import ua.uzhnu.collab.enums.TaskStatus;
 import ua.uzhnu.collab.enums.TeamRole;
@@ -318,5 +322,57 @@ class TeamServiceTest {
     assertThat(stats.fileCount()).isEqualTo(2);
     assertThat(stats.totalFileSizeBytes()).isEqualTo(1000L);
     assertThat(stats.messageCount()).isEqualTo(20L);
+  }
+
+  // =====================================================================
+  // GET MEMBER WORKLOADS
+  // =====================================================================
+
+  @Nested
+  @DisplayName("getMemberWorkloads")
+  class GetMemberWorkloads {
+
+    @Test
+    @DisplayName("повертає правильні лічильники для кожного учасника")
+    void returnsCorrectCountsPerMember() {
+      User memberUser =
+          User.builder().id(10L).username("worker").fullName("Працівник Тест").build();
+      TeamMember tm =
+          TeamMember.builder()
+              .id(new TeamMemberId(1L, 10L))
+              .user(memberUser)
+              .role(TeamRole.MEMBER)
+              .build();
+
+      Task todoTask = new Task();
+      todoTask.setId(100L);
+      todoTask.setStatus(TaskStatus.TODO);
+      todoTask.setDueDate(null);
+
+      Task inProgTask = new Task();
+      inProgTask.setId(101L);
+      inProgTask.setStatus(TaskStatus.IN_PROGRESS);
+      inProgTask.setDueDate(LocalDateTime.now().minusHours(2)); // overdue
+
+      Task doneTask = new Task();
+      doneTask.setId(102L);
+      doneTask.setStatus(TaskStatus.DONE);
+      doneTask.setDueDate(LocalDateTime.now().minusDays(1));
+
+      when(memberRepository.findByIdTeamId(1L)).thenReturn(List.of(tm));
+      when(taskRepository.findByAssigneeUserIdAndTeamId(10L, 1L))
+          .thenReturn(List.of(todoTask, inProgTask, doneTask));
+
+      List<UserWorkloadDto> result = teamService.getMemberWorkloads(1L);
+
+      assertThat(result).hasSize(1);
+      UserWorkloadDto dto = result.get(0);
+      assertThat(dto.userId()).isEqualTo(10L);
+      assertThat(dto.fullName()).isEqualTo("Працівник Тест");
+      assertThat(dto.todoCount()).isEqualTo(1);
+      assertThat(dto.inProgressCount()).isEqualTo(1);
+      assertThat(dto.doneCount()).isEqualTo(1);
+      assertThat(dto.overdueCount()).isEqualTo(1);
+    }
   }
 }

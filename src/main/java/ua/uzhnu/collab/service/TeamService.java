@@ -1,5 +1,6 @@
 package ua.uzhnu.collab.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -214,6 +215,37 @@ public class TeamService {
   /** Учасники команди. */
   public List<TeamMemberDto> getMembers(Long teamId) {
     return memberRepository.findByIdTeamId(teamId).stream().map(mapper::toTeamMemberDto).toList();
+  }
+
+  /** Навантаження кожного учасника команди: кількість задач по статусах і прострочених. */
+  public List<UserWorkloadDto> getMemberWorkloads(Long teamId) {
+    LocalDateTime now = LocalDateTime.now();
+    return memberRepository.findByIdTeamId(teamId).stream()
+        .map(
+            member -> {
+              Long userId = member.getUser().getId();
+              List<ua.uzhnu.collab.entity.Task> tasks =
+                  taskRepository.findByAssigneeUserIdAndTeamId(userId, teamId);
+              int todo =
+                  (int) tasks.stream().filter(t -> t.getStatus() == TaskStatus.TODO).count();
+              int inProg =
+                  (int)
+                      tasks.stream().filter(t -> t.getStatus() == TaskStatus.IN_PROGRESS).count();
+              int done =
+                  (int) tasks.stream().filter(t -> t.getStatus() == TaskStatus.DONE).count();
+              int overdue =
+                  (int)
+                      tasks.stream()
+                          .filter(
+                              t ->
+                                  t.getStatus() != TaskStatus.DONE
+                                      && t.getDueDate() != null
+                                      && t.getDueDate().isBefore(now))
+                          .count();
+              return new UserWorkloadDto(
+                  userId, member.getUser().getFullName(), 1, todo, inProg, done, overdue);
+            })
+        .toList();
   }
 
   /** Статистика команди для дашборду. */
