@@ -135,10 +135,9 @@ public class ReportService {
                       t.overdue() ? "Так" : "Ні"
                     })
             .toArray(String[][]::new);
-    List<TaskDto> taskList = tasks;
-    boolean[] overdueFlags = new boolean[taskList.size()];
-    for (int i = 0; i < taskList.size(); i++) {
-      overdueFlags[i] = taskList.get(i).overdue();
+    boolean[] overdueFlags = new boolean[tasks.size()];
+    for (int i = 0; i < tasks.size(); i++) {
+      overdueFlags[i] = tasks.get(i).overdue();
     }
     return buildExcel("Задачі", teamName + " — Звіт по задачах", headers, rows, overdueFlags);
   }
@@ -331,7 +330,7 @@ public class ReportService {
 
       for (int r = 0; r < rows.length; r++) {
         Row row = sheet.createRow(r + 2);
-        boolean isOverdue = overdueFlags != null && overdueFlags[r];
+        boolean isOverdue = overdueFlags != null && r < overdueFlags.length && overdueFlags[r];
         for (int c = 0; c < rows[r].length; c++) {
           Cell cell = row.createCell(c);
           cell.setCellValue(rows[r][c] != null ? rows[r][c] : "");
