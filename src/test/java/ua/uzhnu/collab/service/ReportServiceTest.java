@@ -2,7 +2,6 @@ package ua.uzhnu.collab.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
@@ -108,6 +107,8 @@ class ReportServiceTest {
     try (XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
       Sheet sheet = wb.getSheetAt(0);
       assertThat(sheet.getPhysicalNumberOfRows()).isEqualTo(10);
+      assertThat(sheet.getRow(1).getCell(0).getStringCellValue()).isEqualTo("Показник");
+      assertThat(sheet.getRow(1).getCell(1).getStringCellValue()).isEqualTo("Значення");
     }
   }
 

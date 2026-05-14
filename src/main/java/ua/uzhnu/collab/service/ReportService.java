@@ -135,7 +135,12 @@ public class ReportService {
                       t.overdue() ? "Так" : "Ні"
                     })
             .toArray(String[][]::new);
-    return buildExcel("Задачі", teamName + " — Звіт по задачах", headers, rows);
+    List<TaskDto> taskList = tasks;
+    boolean[] overdueFlags = new boolean[taskList.size()];
+    for (int i = 0; i < taskList.size(); i++) {
+      overdueFlags[i] = taskList.get(i).overdue();
+    }
+    return buildExcel("Задачі", teamName + " — Звіт по задачах", headers, rows, overdueFlags);
   }
 
   public byte[] exportStatsExcel(Long teamId) {
@@ -151,7 +156,7 @@ public class ReportService {
       {"Файлів", String.valueOf(s.fileCount())},
       {"Повідомлень у чаті", String.valueOf(s.messageCount())}
     };
-    return buildExcel("Статистика", s.teamName() + " — Статистика команди", headers, rows);
+    return buildExcel("Статистика", s.teamName() + " — Статистика команди", headers, rows, null);
   }
 
   public byte[] exportWorkloadExcel(Long teamId) {
@@ -170,7 +175,7 @@ public class ReportService {
                       String.valueOf(w.overdueCount())
                     })
             .toArray(String[][]::new);
-    return buildExcel("Навантаження", teamName + " — Навантаження учасників", headers, rows);
+    return buildExcel("Навантаження", teamName + " — Навантаження учасників", headers, rows, null);
   }
 
   // =====================================================================
@@ -206,6 +211,12 @@ public class ReportService {
         cs.endText();
 
         drawTable(cs, MARGIN, pageH - MARGIN - 36f, colWidths, headers, rows, bold, normal);
+
+        cs.beginText();
+        cs.setFont(normal, 8f);
+        cs.newLineAtOffset(MARGIN, MARGIN);
+        cs.showText("Згенеровано: StudentCollab Platform");
+        cs.endText();
       }
 
       ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -296,12 +307,14 @@ public class ReportService {
   // =====================================================================
 
   private byte[] buildExcel(
-      String sheetName, String reportTitle, String[] headers, String[][] rows) {
+      String sheetName, String reportTitle, String[] headers, String[][] rows,
+      boolean[] overdueFlags) {
     try (XSSFWorkbook wb = new XSSFWorkbook()) {
       XSSFSheet sheet = wb.createSheet(sheetName);
 
       XSSFCellStyle titleStyle = makeTitleStyle(wb);
       XSSFCellStyle headerStyle = makeHeaderStyle(wb);
+      XSSFCellStyle overdueStyle = createOverdueStyle(wb);
 
       Row titleRow = sheet.createRow(0);
       Cell titleCell = titleRow.createCell(0);
@@ -318,8 +331,13 @@ public class ReportService {
 
       for (int r = 0; r < rows.length; r++) {
         Row row = sheet.createRow(r + 2);
+        boolean isOverdue = overdueFlags != null && overdueFlags[r];
         for (int c = 0; c < rows[r].length; c++) {
-          row.createCell(c).setCellValue(rows[r][c] != null ? rows[r][c] : "");
+          Cell cell = row.createCell(c);
+          cell.setCellValue(rows[r][c] != null ? rows[r][c] : "");
+          if (isOverdue) {
+            cell.setCellStyle(overdueStyle);
+          }
         }
       }
 
@@ -334,6 +352,14 @@ public class ReportService {
     } catch (IOException e) {
       throw new RuntimeException("Помилка генерації Excel: " + e.getMessage(), e);
     }
+  }
+
+  private XSSFCellStyle createOverdueStyle(XSSFWorkbook wb) {
+    XSSFCellStyle style = wb.createCellStyle();
+    XSSFFont font = wb.createFont();
+    font.setColor(IndexedColors.RED.getIndex());
+    style.setFont(font);
+    return style;
   }
 
   private XSSFCellStyle makeTitleStyle(XSSFWorkbook wb) {
