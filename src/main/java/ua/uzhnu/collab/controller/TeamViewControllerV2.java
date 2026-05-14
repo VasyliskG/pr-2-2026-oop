@@ -2,6 +2,7 @@ package ua.uzhnu.collab.controller;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.function.Supplier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,6 +23,7 @@ import ua.uzhnu.collab.enums.TaskPriority;
 import ua.uzhnu.collab.enums.TaskStatus;
 import ua.uzhnu.collab.enums.TeamRole;
 import ua.uzhnu.collab.service.FileService;
+import ua.uzhnu.collab.service.ReportService;
 import ua.uzhnu.collab.service.TeamService;
 import ua.uzhnu.collab.service.UserService;
 import ua.uzhnu.collab.viewmodel.TeamViewModel;
@@ -48,6 +50,7 @@ public class TeamViewControllerV2 {
   private final NavigationService navigation;
   private final DialogHelper dialogs;
   private final FileService fileService;
+  private final ReportService reportService;
   private final TeamService teamService;
   private final UserService userService;
   private final SessionContext session;
@@ -610,5 +613,56 @@ public class TeamViewControllerV2 {
       case IN_PROGRESS -> "В роботі";
       case DONE -> "Виконано";
     };
+  }
+
+  // =====================================================================
+  // EXPORT HANDLERS
+  // =====================================================================
+
+  @FXML private void handleExportTasksPdf() {
+    runExport(() -> reportService.exportTasksPdf(viewModel.teamProperty().get().id()), "tasks-report", "pdf");
+  }
+
+  @FXML private void handleExportTasksExcel() {
+    runExport(() -> reportService.exportTasksExcel(viewModel.teamProperty().get().id()), "tasks-report", "xlsx");
+  }
+
+  @FXML private void handleExportStatsPdf() {
+    runExport(() -> reportService.exportStatsPdf(viewModel.teamProperty().get().id()), "stats-report", "pdf");
+  }
+
+  @FXML private void handleExportStatsExcel() {
+    runExport(() -> reportService.exportStatsExcel(viewModel.teamProperty().get().id()), "stats-report", "xlsx");
+  }
+
+  @FXML private void handleExportWorkloadPdf() {
+    runExport(() -> reportService.exportWorkloadPdf(viewModel.teamProperty().get().id()), "workload-report", "pdf");
+  }
+
+  @FXML private void handleExportWorkloadExcel() {
+    runExport(() -> reportService.exportWorkloadExcel(viewModel.teamProperty().get().id()), "workload-report", "xlsx");
+  }
+
+  private void runExport(Supplier<byte[]> generator, String defaultName, String ext) {
+    viewModel.loadingProperty().set(true);
+    Task<byte[]> task = new Task<>() {
+      @Override protected byte[] call() { return generator.get(); }
+    };
+    task.setOnSucceeded(e -> {
+      viewModel.loadingProperty().set(false);
+      File file = dialogs.showSaveFileDialog(lblTeamName.getScene().getWindow(), defaultName, ext);
+      if (file == null) return;
+      try {
+        Files.write(file.toPath(), task.getValue());
+        dialogs.showInfo("Збережено", "Файл збережено: " + file.getName());
+      } catch (Exception ex) {
+        dialogs.showError("Помилка запису", ex.getMessage());
+      }
+    });
+    task.setOnFailed(e -> {
+      viewModel.loadingProperty().set(false);
+      dialogs.showError("Помилка експорту", task.getException().getMessage());
+    });
+    new Thread(task).start();
   }
 }

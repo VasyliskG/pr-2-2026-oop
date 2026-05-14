@@ -22,6 +22,18 @@
                 <Label fx:id="lblTeamName" styleClass="team-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Оновити" onAction="#handleRefresh" styleClass="btn-secondary"/>
+                <MenuButton text="Експорт ▾" styleClass="btn-secondary">
+                    <items>
+                        <MenuItem text="Задачі → PDF" onAction="#handleExportTasksPdf"/>
+                        <MenuItem text="Задачі → Excel" onAction="#handleExportTasksExcel"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Статистика → PDF" onAction="#handleExportStatsPdf"/>
+                        <MenuItem text="Статистика → Excel" onAction="#handleExportStatsExcel"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Навантаження → PDF" onAction="#handleExportWorkloadPdf"/>
+                        <MenuItem text="Навантаження → Excel" onAction="#handleExportWorkloadExcel"/>
+                    </items>
+                </MenuButton>
                 <ProgressIndicator fx:id="spinner" visible="false" prefWidth="24" prefHeight="24"/>
             </HBox>
             <Label fx:id="lblStats" styleClass="stats-bar">
