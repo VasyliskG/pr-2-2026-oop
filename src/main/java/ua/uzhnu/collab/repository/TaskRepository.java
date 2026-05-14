@@ -219,6 +219,19 @@ public class TaskRepository {
     return jdbc.query(sql, Map.of("userId", userId), TASK_MAPPER);
   }
 
+  public List<Task> findByAssigneeUserIdAndTeamId(Long userId, Long teamId) {
+    String sql =
+        SELECT
+            + """
+            JOIN task_assignees ta ON ta.task_id = t.id
+            WHERE ta.user_id = :userId AND t.team_id = :teamId
+            ORDER BY t.due_date NULLS LAST
+            """;
+    MapSqlParameterSource p =
+        new MapSqlParameterSource().addValue("userId", userId).addValue("teamId", teamId);
+    return jdbc.query(sql, p, TASK_MAPPER);
+  }
+
   public long countByTeamIdAndStatus(Long teamId, TaskStatus status) {
     Long n =
         jdbc.queryForObject(

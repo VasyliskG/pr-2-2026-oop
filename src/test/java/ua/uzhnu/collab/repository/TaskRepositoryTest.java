@@ -221,4 +221,27 @@ class TaskRepositoryTest extends AbstractRepositoryIntegrationTest {
         .containsExactly("AssignedToAlice")
         .doesNotContain("Unassigned");
   }
+
+  // =====================================================================
+  // findByAssigneeUserIdAndTeamId
+  // =====================================================================
+
+  @Test
+  @DisplayName("findByAssigneeUserIdAndTeamId: повертає лише задачі призначеного користувача в конкретній команді")
+  void findByAssigneeUserIdAndTeamId_excludesOtherTeams() {
+    User assignee = userRepository.save(user("assignee-filter"));
+    Team otherTeam = teamRepository.save(team("Other", creator));
+
+    Task inTeam = taskRepository.save(task(team, creator, "In team"));
+    Task inOther = taskRepository.save(task(otherTeam, creator, "In other"));
+
+    assigneeRepository.save(assignment(inTeam, assignee));
+    assigneeRepository.save(assignment(inOther, assignee));
+
+    List<Task> result =
+        taskRepository.findByAssigneeUserIdAndTeamId(assignee.getId(), team.getId());
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getId()).isEqualTo(inTeam.getId());
+  }
 }

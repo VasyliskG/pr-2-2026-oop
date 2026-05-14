@@ -9,7 +9,7 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/collab_test
+    url: jdbc:postgresql://localhost:5432/collab_test?sslmode=disable
     username: collab_user
     password: collab_secret
     driver-class-name: org.postgresql.Driver
