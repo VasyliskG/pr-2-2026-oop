@@ -663,6 +663,8 @@ public class TeamViewControllerV2 {
       viewModel.loadingProperty().set(false);
       dialogs.showError("Помилка експорту", task.getException().getMessage());
     });
-    new Thread(task).start();
+    Thread t = new Thread(task, "export-" + ext);
+    t.setDaemon(true);
+    t.start();
   }
 }

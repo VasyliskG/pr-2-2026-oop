@@ -243,7 +243,7 @@ public class TeamService {
                                       && t.getDueDate().isBefore(now))
                           .count();
               return new UserWorkloadDto(
-                  userId, member.getUser().getFullName(), 1, todo, inProg, done, overdue);
+                  userId, member.getUser().getFullName(), 0, todo, inProg, done, overdue);
             })
         .toList();
   }

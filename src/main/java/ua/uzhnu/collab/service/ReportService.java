@@ -64,7 +64,7 @@ public class ReportService {
                       fmtStatus(t.status()),
                       fmtPriority(t.priority()),
                       String.join(", ", t.assigneeNames()),
-                      t.dueDate() != null ? t.dueDate().format(DATE_FMT) : "—",
+                      t.dueDate() != null ? t.dueDate().toLocalDate().format(DATE_SHORT) : "—",
                       t.overdue() ? "Так" : "Ні"
                     })
             .toArray(String[][]::new);
@@ -131,7 +131,7 @@ public class ReportService {
                       fmtStatus(t.status()),
                       fmtPriority(t.priority()),
                       String.join(", ", t.assigneeNames()),
-                      t.dueDate() != null ? t.dueDate().format(DATE_FMT) : "",
+                      t.dueDate() != null ? t.dueDate().toLocalDate().format(DATE_SHORT) : "",
                       t.overdue() ? "Так" : "Ні"
                     })
             .toArray(String[][]::new);
@@ -295,8 +295,11 @@ public class ReportService {
   private String clipText(String text, PDFont font, float fontSize, float maxWidth)
       throws IOException {
     if (text.isEmpty()) return text;
-    while (text.length() > 1 && font.getStringWidth(text) / 1000f * fontSize > maxWidth) {
-      text = text.substring(0, text.length() - 1);
+    float scale = fontSize / 1000f;
+    float width = 0f;
+    for (int i = 0; i < text.length(); i++) {
+      width += font.getStringWidth(text.substring(i, i + 1)) * scale;
+      if (width > maxWidth) return text.substring(0, i);
     }
     return text;
   }
