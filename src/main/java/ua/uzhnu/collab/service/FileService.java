@@ -83,6 +83,11 @@ public class FileService {
         .toList();
   }
 
+  /** Пошук файлів у команді за назвою (частковий, case-insensitive). */
+  public List<FileDto> searchFiles(Long teamId, String query) {
+    return fileRepository.searchByTeamIdAndFileName(teamId, query).stream().map(mapper::toFileDto).toList();
+  }
+
   /** Файли конкретної задачі. */
   public List<FileDto> getByTask(Long taskId) {
     return fileRepository.findByTaskId(taskId).stream().map(mapper::toFileDto).toList();

@@ -1,6 +1,8 @@
 package ua.uzhnu.collab.viewmodel;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,6 +53,9 @@ public class TeamViewModel {
   // Файли та учасники
   private final ObservableList<FileDto> files = FXCollections.observableArrayList();
   private final ObservableList<TeamMemberDto> members = FXCollections.observableArrayList();
+  private final ObservableList<UserWorkloadDto> memberWorkloads = FXCollections.observableArrayList();
+  // Календар дедлайнів — список задач для обраної дати
+  private final ObservableList<TaskDto> calendarTasks = FXCollections.observableArrayList();
 
   // Статистика
   private final ObjectProperty<TeamStatsDto> stats = new SimpleObjectProperty<>();
@@ -97,6 +102,14 @@ public class TeamViewModel {
     return members;
   }
 
+  public ObservableList<UserWorkloadDto> getMemberWorkloads() {
+    return memberWorkloads;
+  }
+
+  public ObservableList<TaskDto> getCalendarTasks() {
+    return calendarTasks;
+  }
+
   public ObjectProperty<TeamStatsDto> statsProperty() {
     return stats;
   }
@@ -121,6 +134,7 @@ public class TeamViewModel {
         List<ChatMessageDto> msgs = chatService.getRecentMessages(teamId, 0);
         List<FileDto> teamFiles = fileService.getByTeam(teamId);
         List<TeamMemberDto> teamMembers = teamService.getMembers(teamId);
+        List<UserWorkloadDto> workloads = teamService.getMemberWorkloads(teamId);
         TeamStatsDto teamStats = teamService.getStatistics(teamId);
 
         // Оновлення UI у потоці JavaFX
@@ -136,6 +150,7 @@ public class TeamViewModel {
               chatMessages.setAll(msgs);
               files.setAll(teamFiles);
               members.setAll(teamMembers);
+              memberWorkloads.setAll(workloads);
               stats.set(teamStats);
             });
 
@@ -222,8 +237,27 @@ public class TeamViewModel {
   }
 
   public void onMessageSent(ChatMessageDto msg) {
-    chatMessages.addFirst(msg); // нове повідомлення вгорі
+    // нове повідомлення вгорі списку
+    chatMessages.add(0, msg);
     chatInput.set("");
+  }
+
+  /** Завантажує задачі для обраної дати (00:00 — 23:59). */
+  public Task<List<TaskDto>> loadTasksForDateAction(LocalDate date) {
+    return loadTasksForRangeAction(date, date);
+  }
+
+  /** Завантажує задачі для діапазону дат включно. */
+  public Task<List<TaskDto>> loadTasksForRangeAction(LocalDate fromDate, LocalDate toDate) {
+    Long teamId = team.get().id();
+    LocalDateTime from = fromDate.atStartOfDay();
+    LocalDateTime to = toDate.atTime(23, 59, 59);
+    return new Task<>() {
+      @Override
+      protected List<TaskDto> call() {
+        return taskService.getUpcomingForTeamBetween(teamId, from, to);
+      }
+    };
   }
 
   // ---- Пошук задач ----
@@ -235,6 +269,17 @@ public class TeamViewModel {
       @Override
       protected List<TaskDto> call() {
         return taskService.search(teamId, query);
+      }
+    };
+  }
+
+  /** Пошук файлів у команді за назвою. */
+  public Task<List<FileDto>> searchFilesAction(String query) {
+    Long teamId = team.get().id();
+    return new Task<>() {
+      @Override
+      protected List<FileDto> call() {
+        return fileService.searchFiles(teamId, query);
       }
     };
   }

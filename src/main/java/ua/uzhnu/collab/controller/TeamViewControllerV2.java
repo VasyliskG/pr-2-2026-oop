@@ -8,9 +8,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,9 @@ import ua.uzhnu.collab.service.ReportService;
 import ua.uzhnu.collab.service.TeamService;
 import ua.uzhnu.collab.service.UserService;
 import ua.uzhnu.collab.viewmodel.TeamViewModel;
+import ua.uzhnu.collab.ui.CalendarViewHelper;
+import ua.uzhnu.collab.ui.CalendarViewHelper.CalendarMode;
+import ua.uzhnu.collab.ui.CalendarViewHelper.DateRange;
 
 /**
  * Розширений контролер екрану команди (v2).
@@ -74,7 +81,33 @@ public class TeamViewControllerV2 {
   @FXML private Label lblReplyTo;
 
   @FXML private ListView<FileDto> listFiles;
+  @FXML private TextField txtFileSearch;
+  @FXML private DatePicker dpCalendar;
+  @FXML private ToggleGroup calendarModeGroup;
+  @FXML private ToggleButton btnCalendarMonth;
+  @FXML private ToggleButton btnCalendarWeek;
+  @FXML private ToggleButton btnCalendarList;
+  @FXML private ScrollPane spCalendarMonth;
+  @FXML private ScrollPane spCalendarWeek;
+  @FXML private GridPane paneCalendarMonth;
+  @FXML private GridPane paneCalendarWeek;
+  @FXML private Label lblCalendarRange;
+  @FXML private ListView<TaskDto> listCalendarTasks;
   @FXML private ListView<TeamMemberDto> listMembers;
+
+  @FXML private HBox analyticsSummaryBox;
+  @FXML private VBox analyticsStatusBox;
+  @FXML private Label lblAnalyticsUpdatedAt;
+  @FXML private BarChart<String, Number> chartWorkload;
+  @FXML private TableView<UserWorkloadDto> tableWorkload;
+  @FXML private TableColumn<UserWorkloadDto, String> colMemberName;
+  @FXML private TableColumn<UserWorkloadDto, Number> colTodo;
+  @FXML private TableColumn<UserWorkloadDto, Number> colInProgress;
+  @FXML private TableColumn<UserWorkloadDto, Number> colDone;
+  @FXML private TableColumn<UserWorkloadDto, Number> colOverdue;
+
+  private CalendarMode calendarMode = CalendarMode.MONTH;
+  private LocalDate calendarAnchorDate = LocalDate.now();
 
   @FXML
   public void initialize() {
@@ -137,6 +170,12 @@ public class TeamViewControllerV2 {
 
     // CellFactory для файлів
     listFiles.setCellFactory(dialogs.buildFileCellFactory());
+
+    // Календар: місяць / тиждень / список
+    initCalendarView();
+
+    // Аналітика продуктивності
+    initAnalyticsView();
 
     // Контекстне меню для видалення файлу команди
     ContextMenu fileMenu = new ContextMenu();
@@ -221,6 +260,9 @@ public class TeamViewControllerV2 {
     // Пошук
     txtChatInput.setOnAction(e -> handleSendMessage());
     txtTaskSearch.setOnAction(e -> handleSearchTasks());
+    if (txtFileSearch != null) {
+      txtFileSearch.setOnAction(e -> handleSearchFiles());
+    }
 
     // Ініціалізація reply-мітки
     if (lblReplyTo != null) {
@@ -229,16 +271,302 @@ public class TeamViewControllerV2 {
     }
 
     loadAll();
+
+    if (dpCalendar != null) {
+      dpCalendar.setValue(LocalDate.now());
+    }
   }
 
   // =====================================================================
   // ЗАВАНТАЖЕННЯ
   // =====================================================================
 
+  private void initCalendarView() {
+    if (listCalendarTasks != null) {
+      listCalendarTasks.setItems(viewModel.getCalendarTasks());
+      CalendarViewHelper.installAgendaCellFactory(
+          listCalendarTasks,
+          t -> formatAgendaItem(t, false),
+          this::openTaskDetailFromCalendar);
+    }
+
+    if (calendarModeGroup != null) {
+      calendarModeGroup
+          .selectedToggleProperty()
+          .addListener(
+              (obs, oldToggle, newToggle) -> {
+                if (newToggle == btnCalendarWeek) {
+                  calendarMode = CalendarMode.WEEK;
+                } else if (newToggle == btnCalendarList) {
+                  calendarMode = CalendarMode.LIST;
+                } else {
+                  calendarMode = CalendarMode.MONTH;
+                }
+                updateCalendarVisibility();
+                reloadCalendarView();
+              });
+    }
+
+    if (dpCalendar != null) {
+      dpCalendar
+          .valueProperty()
+          .addListener(
+              (obs, oldValue, newValue) -> {
+                if (newValue != null) {
+                  calendarAnchorDate = newValue;
+                  reloadCalendarView();
+                }
+              });
+    }
+
+    calendarMode = CalendarMode.MONTH;
+    updateCalendarVisibility();
+  }
+
+  private void updateCalendarVisibility() {
+    if (spCalendarMonth != null) {
+      spCalendarMonth.setVisible(calendarMode == CalendarMode.MONTH);
+      spCalendarMonth.setManaged(calendarMode == CalendarMode.MONTH);
+    }
+    if (spCalendarWeek != null) {
+      spCalendarWeek.setVisible(calendarMode == CalendarMode.WEEK);
+      spCalendarWeek.setManaged(calendarMode == CalendarMode.WEEK);
+    }
+    if (listCalendarTasks != null) {
+      listCalendarTasks.setVisible(calendarMode == CalendarMode.LIST);
+      listCalendarTasks.setManaged(calendarMode == CalendarMode.LIST);
+    }
+  }
+
+  private void reloadCalendarView() {
+    if (dpCalendar != null && dpCalendar.getValue() != null) {
+      calendarAnchorDate = dpCalendar.getValue();
+    }
+    DateRange range = CalendarViewHelper.rangeFor(calendarAnchorDate, calendarMode);
+    if (lblCalendarRange != null) {
+      lblCalendarRange.setText(CalendarViewHelper.formatRange(range));
+    }
+
+    var task = viewModel.loadTasksForRangeAction(range.from(), range.to());
+    task.setOnSucceeded(
+        e -> {
+          viewModel.getCalendarTasks().setAll(CalendarViewHelper.normalizedTasks(task.getValue()));
+          renderCalendarView();
+        });
+    task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
+    Thread t = new Thread(task, "team-calendar-load");
+    t.setDaemon(true);
+    t.start();
+  }
+
+  private void renderCalendarView() {
+    DateRange range = CalendarViewHelper.rangeFor(calendarAnchorDate, calendarMode);
+    List<TaskDto> tasks = viewModel.getCalendarTasks();
+    switch (calendarMode) {
+      case MONTH ->
+          CalendarViewHelper.renderMonth(
+              paneCalendarMonth,
+              calendarAnchorDate,
+              tasks,
+              t -> formatCalendarChip(t, false),
+              this::openTaskDetailFromCalendar,
+              this::selectCalendarDate);
+      case WEEK ->
+          CalendarViewHelper.renderWeek(
+              paneCalendarWeek,
+              calendarAnchorDate,
+              tasks,
+              t -> formatCalendarChip(t, false),
+              this::openTaskDetailFromCalendar,
+              this::selectCalendarDate);
+      case LIST -> {
+        if (listCalendarTasks != null) {
+          viewModel.getCalendarTasks().setAll(CalendarViewHelper.normalizedTasks(tasks));
+        }
+      }
+    }
+    if (lblCalendarRange != null) {
+      lblCalendarRange.setText(CalendarViewHelper.formatRange(range));
+    }
+  }
+
+  private void selectCalendarDate(LocalDate date) {
+    if (date != null && dpCalendar != null) {
+      dpCalendar.setValue(date);
+    }
+  }
+
+  private void initAnalyticsView() {
+    if (tableWorkload != null) {
+      tableWorkload.setItems(viewModel.getMemberWorkloads());
+      if (colMemberName != null) {
+        colMemberName.setCellValueFactory(
+            data -> new javafx.beans.property.SimpleStringProperty(data.getValue().fullName()));
+      }
+      if (colTodo != null) {
+        colTodo.setCellValueFactory(
+            data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().todoCount()));
+      }
+      if (colInProgress != null) {
+        colInProgress.setCellValueFactory(
+            data ->
+                new javafx.beans.property.SimpleIntegerProperty(data.getValue().inProgressCount()));
+      }
+      if (colDone != null) {
+        colDone.setCellValueFactory(
+            data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().doneCount()));
+      }
+      if (colOverdue != null) {
+        colOverdue.setCellValueFactory(
+            data -> new javafx.beans.property.SimpleIntegerProperty(data.getValue().overdueCount()));
+      }
+    }
+    refreshAnalyticsView();
+  }
+
+  private void refreshAnalyticsView() {
+    TeamStatsDto stats = viewModel.statsProperty().get();
+    if (stats == null) {
+      return;
+    }
+
+    renderAnalyticsSummary(stats);
+    renderStatusBreakdown(stats);
+    renderWorkloadChart(viewModel.getMemberWorkloads());
+
+    if (lblAnalyticsUpdatedAt != null) {
+      lblAnalyticsUpdatedAt.setText(
+          "Оновлено: "
+              + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+    }
+  }
+
+  private void renderAnalyticsSummary(TeamStatsDto stats) {
+    if (analyticsSummaryBox == null) {
+      return;
+    }
+    int total = Math.max(0, stats.totalTasks());
+    analyticsSummaryBox.getChildren().setAll(
+        buildMetricCard("Учасники", String.valueOf(stats.memberCount()), "team-analytics-card"),
+        buildMetricCard("Задачі", String.valueOf(stats.totalTasks()), "team-analytics-card"),
+        buildMetricCard("Виконано", percent(stats.doneCount(), total), "team-analytics-card-success"),
+        buildMetricCard("Прострочено", percent(stats.overdueCount(), total), "team-analytics-card-danger"),
+        buildMetricCard("Файли", String.valueOf(stats.fileCount()), "team-analytics-card"));
+  }
+
+  private void renderStatusBreakdown(TeamStatsDto stats) {
+    if (analyticsStatusBox == null) {
+      return;
+    }
+    int total = Math.max(0, stats.totalTasks());
+    analyticsStatusBox.getChildren().setAll(
+        buildStatusRow("TODO", stats.todoCount(), total),
+        buildStatusRow("В роботі", stats.inProgressCount(), total),
+        buildStatusRow("Виконано", stats.doneCount(), total),
+        buildStatusRow("Прострочено", stats.overdueCount(), total));
+  }
+
+  private void renderWorkloadChart(List<UserWorkloadDto> workloads) {
+    if (chartWorkload == null) {
+      return;
+    }
+    chartWorkload.getData().clear();
+    XYChart.Series<String, Number> series = new XYChart.Series<>();
+    series.setName("Задачі на учасника");
+    for (UserWorkloadDto workload : workloads) {
+      int total =
+          workload.todoCount()
+              + workload.inProgressCount()
+              + workload.doneCount()
+              + workload.overdueCount();
+      series.getData().add(new XYChart.Data<>(shortName(workload.fullName()), total));
+    }
+    chartWorkload.getData().add(series);
+  }
+
+  private VBox buildMetricCard(String title, String value, String styleClass) {
+    VBox card = new VBox(4);
+    card.getStyleClass().add(styleClass);
+    Label lblTitle = new Label(title);
+    lblTitle.getStyleClass().add("team-analytics-card-title");
+    Label lblValue = new Label(value);
+    lblValue.getStyleClass().add("team-analytics-card-value");
+    card.getChildren().addAll(lblTitle, lblValue);
+    return card;
+  }
+
+  private HBox buildStatusRow(String title, int value, int total) {
+    HBox row = new HBox(8);
+    row.getStyleClass().add("team-analytics-row");
+    Label lblTitle = new Label(title);
+    lblTitle.setMinWidth(110);
+    Label lblValue = new Label(String.valueOf(value));
+    lblValue.getStyleClass().add("team-analytics-row-value");
+    Label lblPct = new Label(percent(value, total));
+    lblPct.getStyleClass().add("team-analytics-row-pct");
+    row.getChildren().addAll(lblTitle, lblValue, lblPct);
+    return row;
+  }
+
+  private String percent(int value, int total) {
+    if (total <= 0) {
+      return "0%";
+    }
+    return String.format("%d%%", Math.round(value * 100.0 / total));
+  }
+
+  private String shortName(String name) {
+    if (name == null) return "";
+    return name.length() <= 14 ? name : name.substring(0, 11) + "…";
+  }
+
+  private void setCalendarAnchorDate(LocalDate date) {
+    if (date == null) {
+      return;
+    }
+    calendarAnchorDate = date;
+    if (dpCalendar == null || date.equals(dpCalendar.getValue())) {
+      reloadCalendarView();
+    } else {
+      dpCalendar.setValue(date);
+    }
+  }
+
+  private void openTaskDetailFromCalendar(TaskDto task) {
+    if (task == null || listCalendarTasks == null || listCalendarTasks.getScene() == null) {
+      return;
+    }
+    dialogs.showTaskDetail(task.id(), task.teamId(), listCalendarTasks.getScene().getWindow());
+    reloadCalendarView();
+  }
+
+  private String formatCalendarChip(TaskDto task, boolean agenda) {
+    String time = task.dueDate() != null ? task.dueDate().toLocalTime().toString() : "";
+    String prefix = time.isEmpty() ? "" : time + " · ";
+    return agenda ? prefix + task.title() : prefix + task.title();
+  }
+
+  private String formatAgendaItem(TaskDto task, boolean includeTeam) {
+    StringBuilder sb = new StringBuilder();
+    if (task.dueDate() != null) {
+      sb.append(task.dueDate().toLocalDate()).append(" ").append(task.dueDate().toLocalTime()).append(" — ");
+    }
+    sb.append(task.title());
+    if (includeTeam && task.teamName() != null && !task.teamName().isBlank()) {
+      sb.append(" (").append(task.teamName()).append(")");
+    }
+    return sb.toString();
+  }
+
   private void loadAll() {
     viewModel.loadingProperty().set(true);
     var task = viewModel.createLoadAllTask();
-    task.setOnSucceeded(e -> viewModel.loadingProperty().set(false));
+    task.setOnSucceeded(
+        e -> {
+          viewModel.loadingProperty().set(false);
+          reloadCalendarView();
+          Platform.runLater(this::refreshAnalyticsView);
+        });
     task.setOnFailed(
         e -> {
           viewModel.loadingProperty().set(false);
@@ -337,7 +665,11 @@ public class TeamViewControllerV2 {
         .ifPresent(
             dto -> {
               var task = viewModel.createTaskAction(dto);
-              task.setOnSucceeded(e -> viewModel.onTaskCreated(task.getValue()));
+                  task.setOnSucceeded(
+                      e -> {
+                        viewModel.onTaskCreated(task.getValue());
+                        loadAll();
+                      });
               task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
               new Thread(task).start();
             });
@@ -363,6 +695,23 @@ public class TeamViewControllerV2 {
               .getDoneTasks()
               .setAll(results.stream().filter(t -> t.status() == TaskStatus.DONE).toList());
         });
+    new Thread(task).start();
+  }
+
+  @FXML
+  private void handleSearchFiles() {
+    String q = txtFileSearch.getText().trim();
+    if (q.isEmpty()) {
+      loadAll();
+      return;
+    }
+    var task = viewModel.searchFilesAction(q);
+    task.setOnSucceeded(
+        e -> {
+          List<FileDto> results = task.getValue();
+          viewModel.getFiles().setAll(results);
+        });
+    task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
     new Thread(task).start();
   }
 
@@ -417,11 +766,27 @@ public class TeamViewControllerV2 {
 
     task.setOnSucceeded(
         e -> {
-          viewModel.getFiles().addFirst(task.getValue());
+          viewModel.getFiles().add(0, task.getValue());
           dialogs.showInfo("Файл завантажено", "Файл «" + file.getName() + "» додано до команди.");
+          refreshAnalyticsView();
         });
     task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
     new Thread(task).start();
+  }
+
+  @FXML
+  private void handleCalendarToday() {
+    setCalendarAnchorDate(LocalDate.now());
+  }
+
+  @FXML
+  private void handleCalendarPrevious() {
+    setCalendarAnchorDate(CalendarViewHelper.shiftAnchor(calendarAnchorDate, calendarMode, -1));
+  }
+
+  @FXML
+  private void handleCalendarNext() {
+    setCalendarAnchorDate(CalendarViewHelper.shiftAnchor(calendarAnchorDate, calendarMode, 1));
   }
 
   private void handleDeleteFile() {
@@ -473,6 +838,7 @@ public class TeamViewControllerV2 {
           viewModel.getMembers().add(task.getValue());
           dialogs.showInfo(
               "Учасника додано", "Користувача @" + username + " додано з роллю " + role);
+          loadAll();
         });
     task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
     new Thread(task).start();
@@ -497,8 +863,7 @@ public class TeamViewControllerV2 {
           }
         };
 
-    task.setOnSucceeded(
-        e -> viewModel.getMembers().removeIf(m -> m.userId().equals(selected.userId())));
+    task.setOnSucceeded(e -> loadAll());
     task.setOnFailed(e -> dialogs.showError("Помилка", task.getException().getMessage()));
     new Thread(task).start();
   }
@@ -579,7 +944,11 @@ public class TeamViewControllerV2 {
             TaskDto sel = list.getSelectionModel().getSelectedItem();
             if (sel == null) return;
             var task = viewModel.changeStatusAction(sel.id(), target);
-            task.setOnSucceeded(ev -> viewModel.onStatusChanged(task.getValue()));
+            task.setOnSucceeded(
+                ev -> {
+                  viewModel.onStatusChanged(task.getValue());
+                  loadAll();
+                });
             task.setOnFailed(ev -> dialogs.showError("Помилка", task.getException().getMessage()));
             new Thread(task).start();
           });
@@ -598,7 +967,11 @@ public class TeamViewControllerV2 {
             return;
           }
           var deleteTask = viewModel.deleteTaskAction(sel.id());
-          deleteTask.setOnSucceeded(ev -> viewModel.onTaskDeleted(sel.id()));
+          deleteTask.setOnSucceeded(
+              ev -> {
+                viewModel.onTaskDeleted(sel.id());
+                loadAll();
+              });
           deleteTask.setOnFailed(
               ev -> dialogs.showError("Помилка видалення", deleteTask.getException().getMessage()));
           new Thread(deleteTask).start();

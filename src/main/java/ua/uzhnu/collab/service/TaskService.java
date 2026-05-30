@@ -229,6 +229,18 @@ public class TaskService {
         .toList();
   }
 
+  /** Повертає задачі з дедлайнами у вказаному діапазоні для команди. */
+  public List<TaskDto> getUpcomingForTeamBetween(Long teamId, LocalDateTime from, LocalDateTime to) {
+    return taskRepository.findUpcomingByTeam(teamId, from, to).stream()
+        .map(this::toTaskDtoWithContext)
+        .toList();
+  }
+
+  /** Повертає задачі з дедлайнами у вказаному діапазоні по всіх командах (глобально). */
+  public List<TaskDto> getUpcomingGlobalBetween(LocalDateTime from, LocalDateTime to) {
+    return taskRepository.findUpcomingGlobal(from, to).stream().map(this::toTaskDtoWithContext).toList();
+  }
+
   /** Задачі за статусом (для канбан-дошки). */
   public List<TaskDto> getByTeamAndStatus(Long teamId, TaskStatus status) {
     return taskRepository.findByTeamIdAndStatus(teamId, status).stream()

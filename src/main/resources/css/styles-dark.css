@@ -376,34 +376,70 @@ TextArea {
     -fx-font-size: 13px;
 }
 
-.team-list .list-cell {
-    -fx-padding: 12 16;
+.section-subtitle {
     -fx-font-size: 14px;
-    -fx-text-fill: -text;
-    -fx-background-color: -bg-white;
-}
-
-.team-list .list-cell:selected {
-    -fx-background-color: #3f3f3f;
-    -fx-text-fill: -primary;
-}
-
-/* =====================================================================
-   TEAM SCREEN
-   ===================================================================== */
-
-.team-container {
-    -fx-background-color: -bg-light;
-}
-
-.team-title {
-    -fx-font-size: 20px;
-    -fx-text-fill: -primary;
-}
-
-.stats-bar {
-    -fx-font-size: 12px;
     -fx-text-fill: -text-secondary;
+}
+
+.calendar-mode-toggle {
+    -fx-background-color: -bg-light;
+    -fx-text-fill: -text;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+}
+
+.calendar-mode-toggle:selected {
+    -fx-background-color: #3f3f3f;
+    -fx-border-color: -accent;
+    -fx-text-fill: -primary;
+}
+
+.calendar-day-cell {
+    -fx-background-color: -bg-white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+    -fx-min-height: 120;
+}
+
+.calendar-day-cell-outside {
+    -fx-opacity: 0.55;
+}
+
+.calendar-day-cell-today {
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+}
+
+.calendar-day-cell-selected {
+    -fx-background-color: #3a3a3a;
+}
+
+.calendar-day-number {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -primary;
+}
+
+.calendar-task-chip {
+    -fx-background-color: #3a3a3a;
+    -fx-background-radius: 8;
+    -fx-text-fill: -text;
+    -fx-padding: 4 8;
+    -fx-font-size: 12px;
+}
+
+.calendar-task-more {
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 12px;
+}
+
+.calendar-toolbar {
+    -fx-padding: 0 0 4 0;
 }
 
 /* Kanban board */

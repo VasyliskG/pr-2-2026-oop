@@ -146,6 +146,13 @@ public class AppFileRepository {
     return jdbc.query(SELECT + "WHERE f.task_id = :taskId", Map.of("taskId", taskId), FILE_MAPPER);
   }
 
+  /** Пошук файлів у команді за частковою назвою файлу (case-insensitive). */
+  public List<AppFile> searchByTeamIdAndFileName(Long teamId, String q) {
+    String sql = SELECT + "WHERE f.team_id = :teamId AND (LOWER(f.file_name) LIKE LOWER(:q)) ORDER BY f.uploaded_at DESC";
+    MapSqlParameterSource p = new MapSqlParameterSource().addValue("teamId", teamId).addValue("q", "%" + q + "%");
+    return jdbc.query(sql, p, FILE_MAPPER);
+  }
+
   public List<AppFile> findByTeamIdAndTaskIsNull(Long teamId) {
     return jdbc.query(
         SELECT + "WHERE f.team_id = :teamId AND f.task_id IS NULL",

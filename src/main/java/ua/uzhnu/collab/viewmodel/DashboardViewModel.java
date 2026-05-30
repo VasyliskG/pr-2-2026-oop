@@ -30,6 +30,8 @@ public class DashboardViewModel {
   private final StringProperty welcomeMessage = new SimpleStringProperty("");
   private final BooleanProperty loading = new SimpleBooleanProperty(false);
   private final ObjectProperty<TeamDto> selectedTeam = new SimpleObjectProperty<>();
+  // Календар глобальних дедлайнів
+  private final ObservableList<ua.uzhnu.collab.dto.Dtos.TaskDto> calendarTasks = FXCollections.observableArrayList();
 
   // ---- Геттери властивостей ----
 
@@ -49,6 +51,10 @@ public class DashboardViewModel {
     return selectedTeam;
   }
 
+  public ObservableList<ua.uzhnu.collab.dto.Dtos.TaskDto> getCalendarTasks() {
+    return calendarTasks;
+  }
+
   // ---- Завантаження даних ----
 
   /** Створює асинхронну задачу завантаження команд користувача. */
@@ -63,6 +69,7 @@ public class DashboardViewModel {
       }
     };
   }
+
 
   /** Оновлює список команд після завантаження. */
   public void onTeamsLoaded(List<TeamDto> loadedTeams) {

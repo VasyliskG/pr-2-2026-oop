@@ -10,11 +10,23 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 
 <!--
     Екран команди v2: канбан із контекстними меню, чат з відповідями,
@@ -23,6 +35,10 @@
 -->
 
 <BorderPane styleClass="team-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="ua.uzhnu.collab.controller.TeamViewControllerV2">
+
+    <fx:define>
+        <ToggleGroup fx:id="calendarModeGroup" />
+    </fx:define>
 
     <!-- Верхня панель -->
     <top>
@@ -106,10 +122,48 @@
                     <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
                     <HBox alignment="CENTER_LEFT" spacing="8">
                         <Label styleClass="section-title" text="Файли команди" />
-                        <Region HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtFileSearch" promptText="Пошук файлів..." styleClass="search-field" HBox.hgrow="ALWAYS" />
                         <Button onAction="#handleUploadFile" styleClass="btn-primary" text="+ Завантажити файл" />
                     </HBox>
                     <ListView fx:id="listFiles" VBox.vgrow="ALWAYS" />
+                </VBox>
+            </Tab>
+
+            <!-- ============= Календар дедлайнів ============= -->
+            <Tab text="Календар">
+                <VBox spacing="8">
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label styleClass="section-title" text="Календар дедлайнів" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleCalendarPrevious" styleClass="btn-secondary" text="←" />
+                        <Button onAction="#handleCalendarToday" styleClass="btn-secondary" text="Сьогодні" />
+                        <DatePicker fx:id="dpCalendar" />
+                        <Button onAction="#handleCalendarNext" styleClass="btn-secondary" text="→" />
+                    </HBox>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label styleClass="stats-label" text="Режим:" />
+                        <ToggleButton fx:id="btnCalendarMonth" selected="true" styleClass="calendar-mode-toggle" text="Місяць" toggleGroup="$calendarModeGroup" />
+                        <ToggleButton fx:id="btnCalendarWeek" styleClass="calendar-mode-toggle" text="Тиждень" toggleGroup="$calendarModeGroup" />
+                        <ToggleButton fx:id="btnCalendarList" styleClass="calendar-mode-toggle" text="Список" toggleGroup="$calendarModeGroup" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblCalendarRange" styleClass="stats-label" />
+                    </HBox>
+
+                    <StackPane VBox.vgrow="ALWAYS">
+                        <ScrollPane fx:id="spCalendarMonth" fitToHeight="true" fitToWidth="true" pannable="true">
+                            <content>
+                                <GridPane fx:id="paneCalendarMonth" />
+                            </content>
+                        </ScrollPane>
+                        <ScrollPane fx:id="spCalendarWeek" fitToHeight="true" fitToWidth="true" pannable="true" visible="false" managed="false">
+                            <content>
+                                <GridPane fx:id="paneCalendarWeek" />
+                            </content>
+                        </ScrollPane>
+                        <ListView fx:id="listCalendarTasks" visible="false" managed="false" VBox.vgrow="ALWAYS" />
+                    </StackPane>
                 </VBox>
             </Tab>
 
@@ -123,6 +177,53 @@
                         <Button onAction="#handleAddMember" styleClass="btn-primary" text="+ Додати учасника" />
                     </HBox>
                     <ListView fx:id="listMembers" VBox.vgrow="ALWAYS" />
+                </VBox>
+            </Tab>
+
+            <!-- ============= Аналітика продуктивності ============= -->
+            <Tab text="Аналітика">
+                <VBox spacing="10">
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label styleClass="section-title" text="Аналітика продуктивності" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblAnalyticsUpdatedAt" styleClass="stats-label" />
+                    </HBox>
+
+                    <HBox fx:id="analyticsSummaryBox" spacing="10" />
+
+                    <HBox spacing="12" VBox.vgrow="ALWAYS">
+                        <VBox spacing="8" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                            <Label styleClass="section-subtitle" text="Навантаження по учасниках" />
+                            <BarChart fx:id="chartWorkload">
+                                <xAxis>
+                                    <CategoryAxis label="Учасник" />
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Кількість задач" />
+                                </yAxis>
+                            </BarChart>
+                        </VBox>
+
+                        <VBox spacing="8" styleClass="kanban-column" prefWidth="360">
+                            <Label styleClass="section-subtitle" text="Статуси задач" />
+                            <VBox fx:id="analyticsStatusBox" spacing="8" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8" styleClass="kanban-column" VBox.vgrow="ALWAYS">
+                        <Label styleClass="section-subtitle" text="Деталізація по учасниках" />
+                        <TableView fx:id="tableWorkload" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colMemberName" prefWidth="180" text="Учасник" />
+                                <TableColumn fx:id="colTodo" prefWidth="70" text="TODO" />
+                                <TableColumn fx:id="colInProgress" prefWidth="90" text="В роботі" />
+                                <TableColumn fx:id="colDone" prefWidth="80" text="Виконано" />
+                                <TableColumn fx:id="colOverdue" prefWidth="90" text="Прострочено" />
+                            </columns>
+                        </TableView>
+                    </VBox>
                 </VBox>
             </Tab>
 

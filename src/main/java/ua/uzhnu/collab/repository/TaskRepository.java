@@ -184,6 +184,15 @@ public class TaskRepository {
     return jdbc.query(sql, p, TASK_MAPPER);
   }
 
+  /** Глобальний пошук задач з дедлайнами у вказаному діапазоні (по всіх командах). */
+  public List<Task> findUpcomingGlobal(LocalDateTime from, LocalDateTime to) {
+    String sql =
+        SELECT
+            + "WHERE t.status <> 'DONE'::task_status AND t.due_date BETWEEN :from AND :to ORDER BY t.due_date";
+    MapSqlParameterSource p = new MapSqlParameterSource().addValue("from", from).addValue("to", to);
+    return jdbc.query(sql, p, TASK_MAPPER);
+  }
+
   public List<Task> findOverdueByTeam(Long teamId) {
     String sql =
         SELECT
