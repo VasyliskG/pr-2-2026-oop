@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="page-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="ua.uzhnu.collab.controller.AccountController">
+
+  <top>
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="toolbar">
+      <padding><Insets bottom="12" left="16" right="16" top="12" /></padding>
+      <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-secondary" text="Назад" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Label styleClass="section-title" text="Профіль" />
+      <Region HBox.hgrow="ALWAYS" />
+    </HBox>
+  </top>
+
+  <center>
+    <VBox spacing="8" styleClass="content-area">
+      <padding><Insets bottom="16" left="24" right="24" top="16" /></padding>
+
+      <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Логін:" />
+        <Label fx:id="lblUsername" />
+      </HBox>
+
+      <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Ім'я:" />
+        <Label fx:id="lblFullName" />
+      </HBox>
+
+      <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Email:" />
+        <Label fx:id="lblEmail" />
+      </HBox>
+
+      <HBox spacing="12" alignment="CENTER_LEFT">
+        <Label text="Зареєстровано:" />
+        <Label fx:id="lblCreatedAt" />
+      </HBox>
+
+    </VBox>
+  </center>
+
+</BorderPane>
+

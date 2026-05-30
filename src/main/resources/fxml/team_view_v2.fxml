@@ -1,75 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
 <!--
     Екран команди v2: канбан із контекстними меню, чат з відповідями,
     завантаження файлів, управління учасниками.
     Контролер: TeamViewControllerV2.
 -->
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ua.uzhnu.collab.controller.TeamViewControllerV2"
-            styleClass="team-container">
+
+<BorderPane styleClass="team-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/26" fx:controller="ua.uzhnu.collab.controller.TeamViewControllerV2">
 
     <!-- Верхня панель -->
     <top>
         <VBox styleClass="toolbar">
             <HBox alignment="CENTER_LEFT" spacing="12">
-                <padding><Insets top="10" right="16" bottom="6" left="16"/></padding>
-                <Button text="← Назад" onAction="#handleBack" styleClass="btn-secondary"/>
-                <Label fx:id="lblTeamName" styleClass="team-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Оновити" onAction="#handleRefresh" styleClass="btn-secondary"/>
-                <MenuButton text="Експорт ▾" styleClass="btn-secondary">
+                <padding><Insets bottom="6" left="16" right="16" top="10" /></padding>
+                <Button onAction="#handleBack" styleClass="btn-secondary" text="← Назад" />
+                <Label fx:id="lblTeamName" styleClass="team-title" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleRefresh" styleClass="btn-secondary" text="Оновити" />
+                <MenuButton prefHeight="28.0" prefWidth="87.0" styleClass="btn-secondary" text="Експорт">
                     <items>
-                        <MenuItem text="Задачі → PDF" onAction="#handleExportTasksPdf"/>
-                        <MenuItem text="Задачі → Excel" onAction="#handleExportTasksExcel"/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Статистика → PDF" onAction="#handleExportStatsPdf"/>
-                        <MenuItem text="Статистика → Excel" onAction="#handleExportStatsExcel"/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Навантаження → PDF" onAction="#handleExportWorkloadPdf"/>
-                        <MenuItem text="Навантаження → Excel" onAction="#handleExportWorkloadExcel"/>
+                        <MenuItem onAction="#handleExportTasksPdf" text="Задачі → PDF" />
+                        <MenuItem onAction="#handleExportTasksExcel" text="Задачі → Excel" />
+                        <SeparatorMenuItem />
+                        <MenuItem onAction="#handleExportStatsPdf" text="Статистика → PDF" />
+                        <MenuItem onAction="#handleExportStatsExcel" text="Статистика → Excel" />
+                        <SeparatorMenuItem />
+                        <MenuItem onAction="#handleExportWorkloadPdf" text="Навантаження → PDF" />
+                        <MenuItem onAction="#handleExportWorkloadExcel" text="Навантаження → Excel" />
                     </items>
                 </MenuButton>
-                <ProgressIndicator fx:id="spinner" visible="false" prefWidth="24" prefHeight="24"/>
+                <ProgressIndicator fx:id="spinner" prefHeight="24" prefWidth="24" visible="false" />
             </HBox>
             <Label fx:id="lblStats" styleClass="stats-bar">
-                <padding><Insets top="0" right="16" bottom="8" left="16"/></padding>
+                <padding><Insets bottom="8" left="16" right="16" top="0" /></padding>
             </Label>
         </VBox>
     </top>
 
     <!-- Центр: вкладки -->
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="main-tabs">
+        <TabPane styleClass="main-tabs" tabClosingPolicy="UNAVAILABLE">
 
             <!-- ============= Задачі (канбан) ============= -->
             <Tab text="Задачі">
                 <VBox spacing="8">
-                    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
 
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <TextField fx:id="txtTaskSearch" promptText="Пошук задач..."
-                                   HBox.hgrow="ALWAYS" styleClass="search-field"/>
-                        <Button text="+ Нова задача" onAction="#handleCreateTask"
-                                styleClass="btn-primary"/>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <TextField fx:id="txtTaskSearch" promptText="Пошук задач..." styleClass="search-field" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleCreateTask" styleClass="btn-primary" text="+ Нова задача" />
                     </HBox>
 
                     <HBox spacing="12" VBox.vgrow="ALWAYS">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="kanban-column">
-                            <Label text="TODO" styleClass="kanban-header todo-header"/>
-                            <ListView fx:id="listTodo" VBox.vgrow="ALWAYS"/>
+                        <VBox spacing="6" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                            <Label styleClass="kanban-header todo-header" text="TODO" />
+                            <ListView fx:id="listTodo" VBox.vgrow="ALWAYS" />
                         </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="kanban-column">
-                            <Label text="В РОБОТІ" styleClass="kanban-header progress-header"/>
-                            <ListView fx:id="listInProgress" VBox.vgrow="ALWAYS"/>
+                        <VBox spacing="6" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                            <Label styleClass="kanban-header progress-header" text="В РОБОТІ" />
+                            <ListView fx:id="listInProgress" VBox.vgrow="ALWAYS" />
                         </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS" styleClass="kanban-column">
-                            <Label text="ВИКОНАНО" styleClass="kanban-header done-header"/>
-                            <ListView fx:id="listDone" VBox.vgrow="ALWAYS"/>
+                        <VBox spacing="6" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                            <Label styleClass="kanban-header done-header" text="ВИКОНАНО" />
+                            <ListView fx:id="listDone" VBox.vgrow="ALWAYS" />
                         </VBox>
                     </HBox>
                 </VBox>
@@ -78,21 +87,15 @@
             <!-- ============= Чат з відповідями ============= -->
             <Tab text="Чат">
                 <VBox spacing="8">
-                    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
-                    <ListView fx:id="listChat" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                    <ListView fx:id="listChat" styleClass="chat-list" VBox.vgrow="ALWAYS" />
 
                     <!-- Індикатор відповіді -->
-                    <Label fx:id="lblReplyTo" visible="false" managed="false"
-                           styleClass="reply-indicator"
-                           style="-fx-background-color: #ecf0f1; -fx-padding: 6 12;
-                                  -fx-background-radius: 4; -fx-font-size: 12px;
-                                  -fx-text-fill: #7f8c8d; -fx-cursor: hand;"/>
+                    <Label fx:id="lblReplyTo" managed="false" styleClass="reply-indicator" visible="false" />
 
                     <HBox spacing="8">
-                        <TextField fx:id="txtChatInput" promptText="Написати повідомлення..."
-                                   HBox.hgrow="ALWAYS" styleClass="chat-input"/>
-                        <Button text="Надіслати" onAction="#handleSendMessage"
-                                styleClass="btn-primary"/>
+                        <TextField fx:id="txtChatInput" promptText="Написати повідомлення..." styleClass="chat-input" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleSendMessage" styleClass="btn-primary" text="Надіслати" />
                     </HBox>
                 </VBox>
             </Tab>
@@ -100,28 +103,26 @@
             <!-- ============= Файли з завантаженням ============= -->
             <Tab text="Файли">
                 <VBox spacing="8">
-                    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Label text="Файли команди" styleClass="section-title"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button text="+ Завантажити файл" onAction="#handleUploadFile"
-                                styleClass="btn-primary"/>
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label styleClass="section-title" text="Файли команди" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleUploadFile" styleClass="btn-primary" text="+ Завантажити файл" />
                     </HBox>
-                    <ListView fx:id="listFiles" VBox.vgrow="ALWAYS"/>
+                    <ListView fx:id="listFiles" VBox.vgrow="ALWAYS" />
                 </VBox>
             </Tab>
 
             <!-- ============= Учасники з управлінням ============= -->
             <Tab text="Учасники">
                 <VBox spacing="8">
-                    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Label text="Учасники команди" styleClass="section-title"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button text="+ Додати учасника" onAction="#handleAddMember"
-                                styleClass="btn-primary"/>
+                    <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label styleClass="section-title" text="Учасники команди" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleAddMember" styleClass="btn-primary" text="+ Додати учасника" />
                     </HBox>
-                    <ListView fx:id="listMembers" VBox.vgrow="ALWAYS"/>
+                    <ListView fx:id="listMembers" VBox.vgrow="ALWAYS" />
                 </VBox>
             </Tab>
 

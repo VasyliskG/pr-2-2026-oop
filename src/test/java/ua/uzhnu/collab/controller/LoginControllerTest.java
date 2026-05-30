@@ -16,6 +16,7 @@ import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import ua.uzhnu.collab.config.NavigationService;
+import ua.uzhnu.collab.config.PreferencesService;
 import ua.uzhnu.collab.config.SessionContext;
 import ua.uzhnu.collab.service.UserService;
 import ua.uzhnu.collab.viewmodel.LoginViewModel;
@@ -27,6 +28,7 @@ class LoginControllerTest {
   @Mock private UserService userService;
   @Mock private SessionContext sessionContext;
   @Mock private NavigationService navigation;
+  @Mock private PreferencesService preferencesService;
 
   private LoginViewModel viewModel;
 
@@ -34,7 +36,7 @@ class LoginControllerTest {
   void start(Stage stage) throws Exception {
     MockitoAnnotations.openMocks(this);
     viewModel = new LoginViewModel(userService, sessionContext);
-    LoginController controller = new LoginController(viewModel, navigation);
+    LoginController controller = new LoginController(viewModel, navigation, preferencesService, userService);
 
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
     loader.setControllerFactory(type -> controller);

@@ -29,7 +29,7 @@
                     <Label fx:id="lblStatus"/>
                     <Label fx:id="lblPriority"/>
                     <Label fx:id="lblDueDate" styleClass="stats-label"/>
-                    <Label fx:id="lblOverdue" style="-fx-text-fill: #c0392b;"/>
+                    <Label fx:id="lblOverdue" styleClass="overdue-label"/>
                 </HBox>
                 <Label fx:id="lblCreator" styleClass="stats-label"/>
             </VBox>
@@ -55,7 +55,7 @@
                     <TextField fx:id="txtEditDueTime" promptText="HH:mm" prefWidth="70"
                                styleClass="input-field"/>
                     <Button text="✕ Очистити" onAction="#handleClearDueDate"
-                            style="-fx-padding: 4 8;"/>
+                            styleClass="btn-secondary btn-compact"/>
                 </HBox>
             </VBox>
         </VBox>

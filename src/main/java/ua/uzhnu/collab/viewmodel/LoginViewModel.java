@@ -28,6 +28,7 @@ public class LoginViewModel {
   private final StringProperty password = new SimpleStringProperty("");
   private final StringProperty errorMessage = new SimpleStringProperty("");
   private final BooleanProperty loading = new SimpleBooleanProperty(false);
+  private final BooleanProperty rememberMe = new SimpleBooleanProperty(false);
 
   // ---- Геттери властивостей (для біндінгу) ----
 
@@ -45,6 +46,10 @@ public class LoginViewModel {
 
   public BooleanProperty loadingProperty() {
     return loading;
+  }
+
+  public BooleanProperty rememberMeProperty() {
+    return rememberMe;
   }
 
   // ---- Бізнес-логіка ----
@@ -92,5 +97,6 @@ public class LoginViewModel {
     password.set("");
     errorMessage.set("");
     loading.set(false);
+    rememberMe.set(false);
   }
 }

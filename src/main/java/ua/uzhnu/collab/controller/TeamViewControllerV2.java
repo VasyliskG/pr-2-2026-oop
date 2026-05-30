@@ -114,7 +114,7 @@ public class TeamViewControllerV2 {
                   Label reply =
                       new Label(
                           "  ↳ " + msg.parentAuthorName() + ": " + msg.parentContentPreview());
-                  reply.setStyle("-fx-font-size: 11px; -fx-text-fill: #95a5a6;");
+                  reply.getStyleClass().add("chat-message-reply");
                   box.getChildren().add(reply);
                 }
                 Label content =
@@ -124,6 +124,7 @@ public class TeamViewControllerV2 {
                             + msg.authorName()
                             + ": "
                             + msg.content());
+                content.getStyleClass().add("chat-message-content");
                 content.setWrapText(true);
                 if (msg.replyCount() > 0) {
                   content.setText(content.getText() + "  [" + msg.replyCount() + " відп.]");
@@ -158,9 +159,9 @@ public class TeamViewControllerV2 {
                 }
                 setText(m.fullName() + " (@" + m.username() + ") — " + m.role());
                 if (m.role() == TeamRole.OWNER) {
-                  setStyle("-fx-font-weight: bold;");
+                  getStyleClass().add("member-owner");
                 } else {
-                  setStyle("");
+                  getStyleClass().remove("member-owner");
                 }
               }
             });
@@ -588,7 +589,7 @@ public class TeamViewControllerV2 {
     // Видалити задачу
     menu.getItems().add(new SeparatorMenuItem());
     MenuItem deleteItem = new MenuItem("Видалити задачу");
-    deleteItem.setStyle("-fx-text-fill: #c0392b;");
+    deleteItem.getStyleClass().add("danger-menu-item");
     deleteItem.setOnAction(
         e -> {
           TaskDto sel = list.getSelectionModel().getSelectedItem();

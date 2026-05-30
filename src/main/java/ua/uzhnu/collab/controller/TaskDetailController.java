@@ -103,8 +103,9 @@ public class TaskDetailController {
                 }
                 VBox box = new VBox(2);
                 Label author = new Label(c.authorName() + " — " + c.createdAt().format(DATE_FMT));
-                author.setStyle("-fx-font-size: 11px; -fx-text-fill: #7f8c8d;");
+                author.getStyleClass().add("comment-author");
                 Label content = new Label(c.content());
+                content.getStyleClass().add("comment-content");
                 content.setWrapText(true);
                 box.getChildren().addAll(author, content);
                 setGraphic(box);

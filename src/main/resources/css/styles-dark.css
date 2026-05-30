@@ -1,0 +1,616 @@
+/*
+ * Student Collab Platform — Dark Theme CSS (Gray Palette)
+ * Color scheme: Neutral gray backgrounds with light gray text, professional look.
+ */
+
+/* =====================================================================
+   COLORS AND VARIABLES
+   ===================================================================== */
+
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: #ffffff;
+
+    /* Dark Theme Palette — Gray-based */
+    -primary:   #ffffff;
+    -accent:    #a8a8a8;
+    -success:   #6abf59;
+    -warning:   #d99d4f;
+    -danger:    #d46a6a;
+    -bg-light:  #2a2a2a;
+    -bg-white:  #323232;
+    -border:    #454545;
+    -text:      #ffffff;
+    -text-secondary: #b0b0b0;
+}
+
+/* Whole app surface */
+.page-container,
+.login-container,
+.dashboard-container,
+.team-container,
+.task-detail,
+.dialog-pane,
+.context-menu,
+.toolbar,
+.content-area,
+.kanban-column,
+.kanban-header,
+.tab-pane,
+.tab-content-area,
+.tab-header-area,
+.split-pane,
+.split-pane-divider,
+.list-view,
+.tree-view,
+.table-view,
+.menu-bar,
+.menu-button,
+.choice-box,
+.combo-box-base,
+.date-picker,
+.text-field,
+.password-field,
+.text-area,
+.scroll-pane {
+    -fx-background-color: -bg-light;
+    -fx-text-fill: -text;
+}
+
+/* =====================================================================
+   UNIVERSAL TEXT STYLES FOR DARK THEME
+   ===================================================================== */
+
+Label,
+CheckBox,
+RadioButton,
+ChoiceBox,
+ComboBox,
+TextField,
+TextArea,
+PasswordField,
+TextInputControl {
+    -fx-text-fill: -text;
+    -fx-prompt-text-fill: -text-secondary;
+}
+
+VBox,
+HBox,
+BorderPane,
+GridPane,
+FlowPane,
+StackPane {
+    -fx-text-fill: -text;
+}
+
+Button {
+    -fx-background-color: -bg-white;
+    -fx-text-fill: -text;
+}
+
+/* Ensure all text in containers is white */
+VBox Label,
+HBox Label,
+BorderPane Label,
+GridPane Label,
+FlowPane Label,
+StackPane Label {
+    -fx-text-fill: -text;
+}
+
+/* ComboBox and DatePicker styling */
+ComboBox,
+DatePicker {
+    -fx-text-fill: -text;
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: -border;
+}
+
+ComboBox .list-cell,
+ComboBox .cell {
+    -fx-text-fill: -text;
+    -fx-background-color: -bg-white;
+}
+
+ComboBox .arrow-button,
+DatePicker .arrow-button,
+MenuButton .arrow-button {
+    -fx-background-color: -bg-white;
+}
+
+ComboBox .arrow,
+DatePicker .arrow,
+MenuButton .arrow {
+    -fx-background-color: -text;
+}
+
+ComboBox:focused,
+DatePicker:focused {
+    -fx-border-color: -accent;
+}
+
+ChoiceBox,
+MenuButton,
+TabPane,
+ListView,
+TreeView,
+TableView,
+ScrollPane,
+ToolBar,
+MenuBar {
+    -fx-background-color: -bg-light;
+}
+
+ChoiceBox .label,
+MenuButton .label,
+TabPane .tab-label,
+MenuItem .label,
+TableView .label,
+ListView .label,
+TreeView .label {
+    -fx-text-fill: -text;
+}
+
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -bg-light;
+}
+
+.tab-pane > .tab-header-area > .headers-region {
+    -fx-background-color: -bg-light;
+}
+
+.tab-pane .tab {
+    -fx-background-color: -bg-white;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #3f3f3f;
+}
+
+.menu-item,
+.menu-item:focused {
+    -fx-background-color: -bg-white;
+}
+
+.menu-item .label,
+.menu-item:focused .label {
+    -fx-text-fill: -text;
+}
+
+.menu-bar,
+.menu-button {
+    -fx-background-color: -bg-white;
+}
+
+CheckBox .box,
+RadioButton .radio {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: -border;
+}
+
+CheckBox:selected .mark,
+RadioButton:selected .dot {
+    -fx-background-color: -text;
+}
+
+ScrollPane > .viewport,
+TabPane > .tab-content-area {
+    -fx-background-color: -bg-light;
+}
+
+ScrollBar,
+ScrollBar .track {
+    -fx-background-color: -bg-light;
+}
+
+ScrollBar .thumb {
+    -fx-background-color: -border;
+}
+
+ProgressIndicator {
+    -fx-progress-color: -accent;
+}
+
+.combo-box-popup > .list-view,
+.combo-box-popup > .list-view .list-cell,
+.date-picker-popup,
+.date-picker-popup > .month-year-pane,
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: -bg-light;
+    -fx-text-fill: -text;
+}
+
+/* =====================================================================
+   LOGIN / REGISTRATION SCREEN
+   ===================================================================== */
+
+.login-container {
+    -fx-background-color: -bg-white;
+    -fx-text-fill: -text;
+}
+
+.app-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-fill: -primary;
+}
+
+.app-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: -text-secondary;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -text-secondary;
+}
+
+.input-field {
+    -fx-padding: 10 14;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+}
+
+.input-field:focused {
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+}
+
+.input-field .text {
+    -fx-fill: -text;
+}
+
+TextArea {
+    -fx-text-fill: -text;
+    -fx-control-inner-background: #1a1a1a;
+    -fx-font-size: 14px;
+}
+
+.checkbox {
+    -fx-text-fill: -text;
+    -fx-font-size: 13px;
+}
+
+.error-label {
+    -fx-text-fill: -danger;
+    -fx-font-size: 13px;
+    -fx-min-height: 20;
+}
+
+.link {
+    -fx-text-fill: -accent;
+    -fx-font-size: 13px;
+}
+
+/* =====================================================================
+   BUTTONS
+   ===================================================================== */
+
+.btn-primary {
+    -fx-background-color: -accent;
+    -fx-text-fill: -bg-white;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.btn-primary:hover {
+    -fx-background-color: derive(-accent, 15%);
+}
+
+.btn-primary:disabled {
+    -fx-opacity: 0.6;
+}
+
+.btn-secondary {
+    -fx-background-color: -bg-light;
+    -fx-text-fill: -text;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: derive(-bg-light, 15%);
+}
+
+.btn-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: -danger;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: -danger;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: -danger;
+    -fx-text-fill: -bg-white;
+}
+
+/* =====================================================================
+   DASHBOARD
+   ===================================================================== */
+
+.dashboard-container {
+    -fx-background-color: -bg-light;
+}
+
+.toolbar {
+    -fx-background-color: -bg-white;
+    -fx-border-color: transparent transparent -border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.welcome-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: -primary;
+}
+
+.content-area {
+    -fx-background-color: -bg-white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 2);
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: -primary;
+}
+
+.stats-label {
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 13px;
+}
+
+.team-list .list-cell {
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: -text;
+    -fx-background-color: -bg-white;
+}
+
+.team-list .list-cell:selected {
+    -fx-background-color: #3f3f3f;
+    -fx-text-fill: -primary;
+}
+
+/* =====================================================================
+   TEAM SCREEN
+   ===================================================================== */
+
+.team-container {
+    -fx-background-color: -bg-light;
+}
+
+.team-title {
+    -fx-font-size: 20px;
+    -fx-text-fill: -primary;
+}
+
+.stats-bar {
+    -fx-font-size: 12px;
+    -fx-text-fill: -text-secondary;
+}
+
+/* Kanban board */
+.kanban-column {
+    -fx-background-color: -bg-white;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0, 0, 1);
+}
+
+.kanban-header {
+    -fx-font-size: 13px;
+    -fx-padding: 6 12;
+    -fx-background-radius: 4;
+    -fx-text-fill: -primary;
+    -fx-alignment: CENTER;
+}
+
+.todo-header {
+    -fx-background-color: #808080;
+}
+
+.progress-header {
+    -fx-background-color: #909090;
+}
+
+.done-header {
+    -fx-background-color: #707070;
+}
+
+.search-field {
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+}
+
+/* Chat */
+.chat-list .list-cell {
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+    -fx-text-fill: -text;
+    -fx-background-color: -bg-white;
+}
+
+.chat-list .list-cell:selected {
+    -fx-background-color: #3f3f3f;
+    -fx-text-fill: -primary;
+}
+
+/* Generic ListView cells */
+ListView .list-cell {
+    -fx-text-fill: -text;
+    -fx-background-color: -bg-white;
+}
+
+ListView .list-cell:selected {
+    -fx-background-color: #3f3f3f;
+    -fx-text-fill: -primary;
+}
+
+.chat-input {
+    -fx-padding: 10 14;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+}
+
+/* Tabs */
+.main-tabs .tab {
+    -fx-padding: 8 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: -text;
+}
+
+.main-tabs .tab:selected .tab-label {
+    -fx-text-fill: -primary;
+}
+
+/* =====================================================================
+   PROGRESS
+   ===================================================================== */
+
+.progress-indicator .indicator {
+    -fx-border-color: -accent;
+}
+
+/* =====================================================================
+   DIALOGS
+   ===================================================================== */
+
+.dialog-pane {
+    -fx-background-color: -bg-white;
+    -fx-text-fill: -text;
+}
+
+.dialog-pane .content {
+    -fx-padding: 16;
+    -fx-text-fill: -text;
+}
+
+.dialog-pane .column-header {
+    -fx-text-fill: -text;
+}
+
+Tooltip {
+    -fx-text-fill: -text;
+    -fx-background-color: -bg-white;
+}
+
+/* =====================================================================
+   ADDITIONAL STYLES
+   ===================================================================== */
+
+/* Task detail dialog */
+.task-detail {
+    -fx-background-color: -bg-light;
+}
+
+.task-detail-title {
+    -fx-font-size: 20px;
+    -fx-text-fill: -primary;
+}
+
+.overdue-label {
+    -fx-text-fill: -danger;
+}
+
+.btn-compact {
+    -fx-padding: 4 8;
+}
+
+.member-owner {
+    -fx-font-weight: bold;
+}
+
+.danger-menu-item .label {
+    -fx-text-fill: -danger;
+}
+
+.comment-author,
+.comment-content,
+.chat-message-reply,
+.chat-message-content {
+    -fx-text-fill: -text;
+}
+
+.comment-author,
+.chat-message-reply {
+    -fx-font-size: 11px;
+}
+
+.comment-content,
+.chat-message-content {
+    -fx-font-size: 13px;
+}
+
+/* Reply indicator in chat */
+.reply-indicator {
+    -fx-background-color: #2f2f2f;
+    -fx-padding: 6 12;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+    -fx-text-fill: -text;
+    -fx-cursor: hand;
+}
+
+.reply-indicator:hover {
+    -fx-background-color: #404040;
+}
+
+/* Context menu */
+.context-menu {
+    -fx-background-color: -bg-white;
+    -fx-border-color: -border;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: -text;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 8, 0, 0, 2);
+}
+
+.context-menu .menu-item:focused {
+    -fx-background-color: #3f3f3f;
+    -fx-text-fill: -primary;
+}
+
+/* SplitPane divider */
+.split-pane .split-pane-divider {
+    -fx-background-color: -border;
+    -fx-padding: 0 1;
+}
+
+/* File upload button */
+.btn-upload {
+    -fx-background-color: #6abf59;
+    -fx-text-fill: -bg-white;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-upload:hover {
+    -fx-background-color: derive(#6abf59, 15%);
+}

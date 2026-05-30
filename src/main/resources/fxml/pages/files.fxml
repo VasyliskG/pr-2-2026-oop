@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="rootPane"
+      xmlns="http://javafx.com/javafx/26"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ua.uzhnu.collab.controller.FilesController">
+
+    <HBox styleClass="filter-bar" alignment="CENTER_LEFT" spacing="12.0">
+        <padding><Insets top="14.0" bottom="14.0" left="20.0" right="20.0" /></padding>
+        <Label styleClass="page-title" text="Files" />
+        <Region HBox.hgrow="ALWAYS" />
+        <TextField styleClass="search-field" promptText="Search files..." prefWidth="180.0" />
+        <Button styleClass="btn-primary" text="Upload File" onAction="#handleUpload" />
+    </HBox>
+
+    <ScrollPane styleClass="page-scroll" fitToWidth="true"
+                vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <content>
+            <VBox spacing="8.0">
+                <padding><Insets top="16.0" bottom="16.0" left="20.0" right="20.0" /></padding>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="📄" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="digest-schema.png" />
+                        <Label styleClass="file-meta" text="245 KB  ·  Lukas Weber  ·  28 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-medium" text="PNG" />
+                    <Button id="digest-schema.png" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="📄" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="worker.ts" />
+                        <Label styleClass="file-meta" text="18 KB  ·  Alex Petrenko  ·  27 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-low" text="TS" />
+                    <Button id="worker.ts" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="📋" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="api-specs-v2.pdf" />
+                        <Label styleClass="file-meta" text="1.2 MB  ·  Maria Shevchenko  ·  25 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-urgent" text="PDF" />
+                    <Button id="api-specs-v2.pdf" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="🎨" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="design-mockups.fig" />
+                        <Label styleClass="file-meta" text="3.4 MB  ·  Lukas Weber  ·  24 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-high" text="FIG" />
+                    <Button id="design-mockups.fig" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="🗄" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="migration-2026.sql" />
+                        <Label styleClass="file-meta" text="8 KB  ·  Danylo Koval  ·  22 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-low" text="SQL" />
+                    <Button id="migration-2026.sql" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+                <HBox styleClass="file-item" alignment="CENTER_LEFT" spacing="14.0">
+                    <Label styleClass="page-title" text="📊" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label styleClass="file-name" text="sprint-24-report.xlsx" />
+                        <Label styleClass="file-meta" text="156 KB  ·  Maria Shevchenko  ·  20 May 2026" />
+                    </VBox>
+                    <Label styleClass="priority-medium" text="XLSX" />
+                    <Button id="sprint-24-report.xlsx" styleClass="btn-secondary" text="Open" onAction="#handleOpen" />
+                </HBox>
+
+            </VBox>
+        </content>
+    </ScrollPane>
+</VBox>

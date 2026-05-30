@@ -31,6 +31,9 @@
     <!-- Повідомлення про помилку -->
     <Label fx:id="lblError" styleClass="error-label" wrapText="true"/>
 
+    <!-- Remember me -->
+    <CheckBox fx:id="chkRememberMe" text="Запам'ятати мене" styleClass="checkbox"/>
+
     <!-- Кнопка входу -->
     <Button fx:id="btnLogin" text="Увійти" onAction="#handleLogin"
             styleClass="btn-primary" maxWidth="Infinity"/>

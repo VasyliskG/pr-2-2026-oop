@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ua.uzhnu.collab.config.NavigationService;
+import ua.uzhnu.collab.config.PreferencesService;
 import ua.uzhnu.collab.config.SessionContext;
 import ua.uzhnu.collab.dto.Dtos.TeamDto;
 import ua.uzhnu.collab.viewmodel.DashboardViewModel;
@@ -26,6 +27,7 @@ public class DashboardController {
   private final TeamViewModel teamViewModel;
   private final NavigationService navigation;
   private final SessionContext sessionContext;
+  private final PreferencesService preferencesService;
   private final DialogHelper dialogs;
 
   @FXML private Label lblWelcome;
@@ -181,6 +183,7 @@ public class DashboardController {
 
   @FXML
   private void handleLogout() {
+    preferencesService.clearCredentials();
     sessionContext.logout();
     navigation.showLogin();
   }
@@ -188,5 +191,17 @@ public class DashboardController {
   @FXML
   private void handleRefresh() {
     loadTeams();
+  }
+
+  @FXML
+  private void showSetting() {
+    // Перейти на екран налаштувань
+    navigation.showSettings();
+  }
+
+  @FXML
+  private void showAccaunt() {
+    // Перейти на екран профілю/акаунту
+    navigation.showAccount();
   }
 }

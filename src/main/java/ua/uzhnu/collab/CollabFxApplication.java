@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import ua.uzhnu.collab.config.ThemeManager;
 
 /**
  * JavaFX Application з інтеграцією Spring Boot.
@@ -41,16 +42,21 @@ public class CollabFxApplication extends Application {
     Parent root = loader.load("/fxml/login.fxml");
 
     Scene scene = new Scene(root, 420, 520);
-    scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
 
     primaryStage.setTitle("Student Collab Platform");
     primaryStage.setScene(scene);
     primaryStage.setMinWidth(400);
     primaryStage.setMinHeight(500);
-    primaryStage.show();
 
-    // Зберігаємо посилання на Stage для навігації між екранами
-    springContext.getBean(StageHolder.class).setPrimaryStage(primaryStage);
+    // Зберігаємо посилання на Stage для навігації та теми
+    StageHolder stageHolder = springContext.getBean(StageHolder.class);
+    stageHolder.setPrimaryStage(primaryStage);
+
+    // Ініціалізація теми
+    ThemeManager themeManager = springContext.getBean(ThemeManager.class);
+    themeManager.loadAndApply();
+
+    primaryStage.show();
   }
 
   @Override

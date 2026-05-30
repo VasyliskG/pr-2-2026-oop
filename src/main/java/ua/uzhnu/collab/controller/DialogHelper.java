@@ -14,6 +14,7 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ua.uzhnu.collab.config.ThemeManager;
 import ua.uzhnu.collab.SpringFxmlLoader;
 import ua.uzhnu.collab.dto.Dtos.FileDto;
 import ua.uzhnu.collab.enums.TeamRole;
@@ -29,6 +30,7 @@ import ua.uzhnu.collab.enums.TeamRole;
 public class DialogHelper {
 
   private final SpringFxmlLoader fxmlLoader;
+  private final ThemeManager themeManager;
 
   /** Відкриває діалог детального перегляду задачі як модальне вікно. */
   public void showTaskDetail(Long taskId, Long teamId, Window owner) {
@@ -45,7 +47,7 @@ public class DialogHelper {
       dialog.setTitle("Деталі задачі");
 
       Scene scene = new Scene(root, 700, 600);
-      scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
+      scene.getStylesheets().add(getClass().getResource(themeManager.getCurrentThemeCssFile()).toExternalForm());
 
       dialog.setScene(scene);
       dialog.showAndWait();
@@ -63,6 +65,9 @@ public class DialogHelper {
     Dialog<String[]> dialog = new Dialog<>();
     dialog.setTitle("Додати учасника");
     dialog.setHeaderText("Введіть логін нового учасника");
+    dialog.getDialogPane()
+        .getStylesheets()
+        .add(getClass().getResource(themeManager.getCurrentThemeCssFile()).toExternalForm());
 
     ButtonType addBtn = new ButtonType("Додати", ButtonBar.ButtonData.OK_DONE);
     dialog.getDialogPane().getButtonTypes().addAll(addBtn, ButtonType.CANCEL);
@@ -134,6 +139,9 @@ public class DialogHelper {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle(title);
     alert.setContentText(message);
+    alert.getDialogPane()
+        .getStylesheets()
+        .add(getClass().getResource(themeManager.getCurrentThemeCssFile()).toExternalForm());
     Optional<ButtonType> result = alert.showAndWait();
     return result.isPresent() && result.get() == ButtonType.OK;
   }
@@ -143,6 +151,9 @@ public class DialogHelper {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle(title);
     alert.setContentText(message);
+    alert.getDialogPane()
+        .getStylesheets()
+        .add(getClass().getResource(themeManager.getCurrentThemeCssFile()).toExternalForm());
     alert.showAndWait();
   }
 
@@ -151,6 +162,9 @@ public class DialogHelper {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(title);
     alert.setContentText(message);
+    alert.getDialogPane()
+        .getStylesheets()
+        .add(getClass().getResource(themeManager.getCurrentThemeCssFile()).toExternalForm());
     alert.showAndWait();
   }
 
