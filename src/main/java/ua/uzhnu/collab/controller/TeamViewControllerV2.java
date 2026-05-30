@@ -17,6 +17,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.input.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -890,6 +891,23 @@ public class TeamViewControllerV2 {
     list.setCellFactory(
         lv ->
             new ListCell<>() {
+              {
+                // Drag detected on a cell — start drag-and-drop with task id
+                setOnDragDetected(
+                    e -> {
+                      TaskDto item = getItem();
+                      if (item == null) return;
+                      Dragboard db = startDragAndDrop(TransferMode.MOVE);
+                      ClipboardContent content = new ClipboardContent();
+                      content.putString(String.valueOf(item.id()));
+                      db.setContent(content);
+                      e.consume();
+                    });
+
+                // When drag is done we can clear selection or perform cleanup if needed
+                setOnDragDone(e -> e.consume());
+              }
+
               @Override
               protected void updateItem(TaskDto t, boolean empty) {
                 super.updateItem(t, empty);
@@ -918,6 +936,45 @@ public class TeamViewControllerV2 {
                 setStyle(t.overdue() ? "-fx-text-fill: #c0392b;" : "");
               }
             });
+
+    // Allow dropping tasks onto this list to change status
+    list.setOnDragOver(
+        e -> {
+          Dragboard db = e.getDragboard();
+          if (db.hasString() && e.getGestureSource() != list) {
+            e.acceptTransferModes(TransferMode.MOVE);
+          }
+          e.consume();
+        });
+
+    list.setOnDragDropped(
+        e -> {
+          boolean success = false;
+          Dragboard db = e.getDragboard();
+          if (db.hasString()) {
+            try {
+              long taskId = Long.parseLong(db.getString());
+              TaskStatus targetStatus;
+              if (list == listTodo) targetStatus = TaskStatus.TODO;
+              else if (list == listInProgress) targetStatus = TaskStatus.IN_PROGRESS;
+              else targetStatus = TaskStatus.DONE;
+
+              var task = viewModel.changeStatusAction(taskId, targetStatus);
+              task.setOnSucceeded(
+                  ev -> {
+                    viewModel.onStatusChanged(task.getValue());
+                    loadAll();
+                  });
+              task.setOnFailed(ev -> dialogs.showError("Помилка", task.getException().getMessage()));
+              new Thread(task).start();
+              success = true;
+            } catch (NumberFormatException ex) {
+              // ignore invalid payload
+            }
+          }
+          e.setDropCompleted(success);
+          e.consume();
+        });
   }
 
   private void addTaskDoubleClick(ListView<TaskDto> list) {
