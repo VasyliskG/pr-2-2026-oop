@@ -17,6 +17,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 import javafx.scene.input.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -917,23 +919,75 @@ public class TeamViewControllerV2 {
                   return;
                 }
 
-                String pIcon =
+                // Build richer graphic for the task cell
+                String color =
                     switch (t.priority()) {
-                      case CRITICAL -> "C ";
-                      case HIGH -> "H ";
-                      case MEDIUM -> "M ";
-                      case LOW -> "L ";
+                      case CRITICAL -> "#e74c3c"; // red
+                      case HIGH -> "#e67e22"; // orange
+                      case MEDIUM -> "#3498db"; // blue
+                      case LOW -> "#2ecc71"; // green
                     };
-                String assignees =
-                    t.assigneeNames().isEmpty()
-                        ? ""
-                        : " [" + String.join(", ", t.assigneeNames()) + "]";
-                String badges = "";
-                if (t.commentCount() > 0) badges += " 💬" + t.commentCount();
-                if (t.fileCount() > 0) badges += " 📎" + t.fileCount();
 
-                setText(pIcon + t.title() + assignees + badges);
-                setStyle(t.overdue() ? "-fx-text-fill: #c0392b;" : "");
+                Region stripe = new Region();
+                stripe.setPrefWidth(6);
+                stripe.setMinWidth(6);
+                stripe.setMaxHeight(Double.MAX_VALUE);
+                stripe.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 3;");
+
+                Label lblTitle = new Label(t.title());
+                lblTitle.setStyle("-fx-font-weight: 600; -fx-font-size: 13px;");
+                lblTitle.setMaxWidth(Double.MAX_VALUE);
+
+                String assignees = t.assigneeNames().isEmpty() ? "" : String.join(", ", t.assigneeNames());
+                Label lblSubtitle = new Label(
+                    assignees.isEmpty() ? (t.creatorName() == null ? "" : "від: " + t.creatorName()) : assignees);
+                lblSubtitle.setStyle("-fx-text-fill: #7f8c8d; -fx-font-size: 11px;");
+
+                HBox leftBox = new HBox();
+                VBox meta = new VBox(2, lblTitle, lblSubtitle);
+                HBox.setHgrow(meta, Priority.ALWAYS);
+
+                // Badges (comments / files)
+                HBox badgesBox = new HBox(6);
+                if (t.commentCount() > 0) {
+                  Label c = new Label("💬 " + t.commentCount());
+                  c.setStyle("-fx-font-size:11px; -fx-text-fill:#34495e;");
+                  badgesBox.getChildren().add(c);
+                }
+                if (t.fileCount() > 0) {
+                  Label f = new Label("📎 " + t.fileCount());
+                  f.setStyle("-fx-font-size:11px; -fx-text-fill:#34495e;");
+                  badgesBox.getChildren().add(f);
+                }
+
+                // Due date
+                Label lblDue = new Label();
+                if (t.dueDate() != null) {
+                  DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+                  String dueText = t.dueDate().format(df);
+                  lblDue.setText(dueText);
+                  lblDue.setStyle(t.overdue() ? "-fx-text-fill: #c0392b; -fx-font-weight:600;" : "-fx-text-fill:#7f8c8d; -fx-font-size:11px;");
+                }
+
+                HBox rightBox = new HBox(8, badgesBox, lblDue);
+                rightBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+                HBox content = new HBox(8, meta, rightBox);
+                content.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                HBox.setHgrow(rightBox, Priority.NEVER);
+
+                HBox root = new HBox(8, stripe, content);
+                root.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                root.setPadding(new javafx.geometry.Insets(6, 8, 6, 8));
+
+                // Tooltip with description
+                if (t.description() != null && !t.description().isBlank()) {
+                  Tooltip tip = new Tooltip(t.description());
+                  Tooltip.install(root, tip);
+                }
+
+                setGraphic(root);
+                setText(null);
               }
             });
 

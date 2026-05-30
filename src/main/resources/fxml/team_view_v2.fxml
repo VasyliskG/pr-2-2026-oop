@@ -49,7 +49,7 @@
                 <Label fx:id="lblTeamName" styleClass="team-title" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button onAction="#handleRefresh" styleClass="btn-secondary" text="Оновити" />
-                <MenuButton prefHeight="28.0" prefWidth="87.0" styleClass="btn-secondary" text="Експорт">
+                <MenuButton styleClass="btn-secondary" text="Експорт">
                     <items>
                         <MenuItem onAction="#handleExportTasksPdf" text="Задачі → PDF" />
                         <MenuItem onAction="#handleExportTasksExcel" text="Задачі → Excel" />
