@@ -394,3 +394,11 @@
 .btn-upload:hover {
     -fx-background-color: derive(#27ae60, -15%);
 }
+
+/* Highlight column during drag-and-drop */
+.kanban-drag-over {
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+    -fx-background-color: rgba(52,152,219,0.04);
+}
+

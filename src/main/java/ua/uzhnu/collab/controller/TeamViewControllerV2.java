@@ -1001,6 +1001,23 @@ public class TeamViewControllerV2 {
           e.consume();
         });
 
+    // Visual feedback: highlight the column VBox when a draggable task enters
+    list.setOnDragEntered(
+        e -> {
+          if (e.getDragboard().hasString()) {
+            javafx.scene.Parent p = list.getParent();
+            if (p != null) p.getStyleClass().add("kanban-drag-over");
+          }
+          e.consume();
+        });
+
+    list.setOnDragExited(
+        e -> {
+          javafx.scene.Parent p = list.getParent();
+          if (p != null) p.getStyleClass().remove("kanban-drag-over");
+          e.consume();
+        });
+
     list.setOnDragDropped(
         e -> {
           boolean success = false;
