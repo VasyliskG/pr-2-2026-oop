@@ -127,7 +127,7 @@ public class ChatMessageRepository {
         SELECT
             + """
             WHERE cm.team_id = :teamId
-            ORDER BY cm.created_at DESC
+            ORDER BY cm.created_at ASC
             LIMIT :limit OFFSET :offset
             """;
     MapSqlParameterSource p =
@@ -143,7 +143,7 @@ public class ChatMessageRepository {
         SELECT
             + """
             WHERE cm.team_id = :teamId AND cm.parent_message_id IS NULL
-            ORDER BY cm.created_at DESC
+            ORDER BY cm.created_at ASC
             LIMIT :limit OFFSET :offset
             """;
     MapSqlParameterSource p =
@@ -168,5 +168,17 @@ public class ChatMessageRepository {
             Map.of("teamId", teamId),
             Long.class);
     return n != null ? n : 0L;
+  }
+
+  public List<ChatMessage> findNewRootMessages(Long teamId, long afterId) {
+    String sql =
+        SELECT
+            + """
+            WHERE cm.team_id = :teamId AND cm.parent_message_id IS NULL AND cm.id > :afterId
+            ORDER BY cm.created_at ASC
+            """;
+    MapSqlParameterSource p =
+        new MapSqlParameterSource().addValue("teamId", teamId).addValue("afterId", afterId);
+    return jdbc.query(sql, p, MSG_MAPPER);
   }
 }

@@ -116,4 +116,16 @@ public class ChatService {
             })
         .toList();
   }
+
+  /** Нові кореневі повідомлення після певного ID (для real-time polling). */
+  public List<ChatMessageDto> loadNewMessages(Long teamId, long afterId) {
+    return messageRepository.findNewRootMessages(teamId, afterId).stream()
+        .map(
+            msg -> {
+              int rc =
+                  messageRepository.findByParentMessageIdOrderByCreatedAtAsc(msg.getId()).size();
+              return mapper.toChatMessageDto(msg, rc);
+            })
+        .toList();
+  }
 }

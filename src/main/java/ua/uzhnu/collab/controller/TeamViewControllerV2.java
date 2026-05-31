@@ -64,10 +64,13 @@ public class TeamViewControllerV2 {
   private final TeamService teamService;
   private final UserService userService;
   private final SessionContext session;
+  private final ua.uzhnu.collab.service.ChatService chatService;
+  private final ua.uzhnu.collab.service.ChatPollingService chatPollingService;
 
   private Long replyToMessageId = null;
+  private Long currentTeamId = null;
 
-  private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+  private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
   // ---- FXML-елементи (ті самі, що й у v1) ----
   @FXML private Label lblTeamName;
@@ -274,6 +277,9 @@ public class TeamViewControllerV2 {
     }
 
     loadAll();
+
+    // Setup real-time chat polling when team loads
+    setupChatPolling();
 
     if (dpCalendar != null) {
       dpCalendar.setValue(LocalDate.now());
@@ -1168,5 +1174,73 @@ public class TeamViewControllerV2 {
     Thread t = new Thread(task, "export-" + ext);
     t.setDaemon(true);
     t.start();
+  }
+
+  // =====================================================================
+  // REAL-TIME CHAT POLLING
+  // =====================================================================
+
+  private void setupChatPolling() {
+    // Check if team is already loaded
+    TeamDto currentTeam = viewModel.teamProperty().get();
+    if (currentTeam != null) {
+      System.out.println("[DEBUG] Team already loaded: " + currentTeam.id());
+      currentTeamId = currentTeam.id();
+      startChatPolling();
+    }
+
+    // Also register listener for future team changes
+    viewModel
+        .teamProperty()
+        .addListener(
+            (obs, oldTeam, newTeam) -> {
+              System.out.println("[DEBUG] Team changed: " + (oldTeam == null ? "null" : oldTeam.id()) + " -> " + (newTeam == null ? "null" : newTeam.id()));
+              if (oldTeam != null && currentTeamId != null) {
+                System.out.println("[DEBUG] Stopping polling for old team: " + currentTeamId);
+                chatPollingService.stopPolling(currentTeamId);
+              }
+              if (newTeam != null) {
+                currentTeamId = newTeam.id();
+                System.out.println("[DEBUG] Starting polling for new team: " + currentTeamId);
+                startChatPolling();
+              }
+            });
+  }
+
+  private void startChatPolling() {
+    if (currentTeamId == null) {
+      System.out.println("[DEBUG] startChatPolling: currentTeamId is null, skipping");
+      return;
+    }
+
+    System.out.println("[DEBUG] startChatPolling: starting for team " + currentTeamId);
+
+    // Initialize lastId based on currently loaded messages
+    long maxLoadedId = viewModel.getChatMessages().stream()
+        .mapToLong(ChatMessageDto::id)
+        .max()
+        .orElse(-1L);
+    System.out.println("[DEBUG] Initializing polling with maxLoadedId=" + maxLoadedId);
+
+    chatPollingService.startPolling(
+        currentTeamId,
+        newMessage -> {
+          System.out.println("[DEBUG] Received new message via callback: " + newMessage.content());
+          if (Platform.isFxApplicationThread()) {
+            viewModel.getChatMessages().add(newMessage);
+            if (listChat != null) {
+              listChat.scrollTo(viewModel.getChatMessages().size() - 1);
+            }
+          } else {
+            Platform.runLater(
+                () -> {
+                  viewModel.getChatMessages().add(newMessage);
+                  if (listChat != null) {
+                    listChat.scrollTo(viewModel.getChatMessages().size() - 1);
+                  }
+                });
+          }
+        },
+        maxLoadedId);
   }
 }
