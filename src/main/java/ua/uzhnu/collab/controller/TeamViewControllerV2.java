@@ -72,6 +72,18 @@ public class TeamViewControllerV2 {
 
   private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
+  private static String getErrorMessage(Task<?> task) {
+    if (task == null || task.getException() == null) {
+      return "Невідома помилка";
+    }
+    Throwable ex = task.getException();
+    String msg = ex.getMessage();
+    if (msg == null || msg.isBlank()) {
+      msg = ex.getClass().getSimpleName();
+    }
+    return msg;
+  }
+
   // ---- FXML-елементи (ті самі, що й у v1) ----
   @FXML private Label lblTeamName;
   @FXML private Label lblStats;
@@ -579,9 +591,18 @@ public class TeamViewControllerV2 {
     task.setOnFailed(
         e -> {
           viewModel.loadingProperty().set(false);
-          dialogs.showError("Помилка", task.getException().getMessage());
+          String errorMsg = getErrorMessage(task);
+          if (errorMsg.contains("Socket closed") || errorMsg.contains("I/O error")) {
+            dialogs.showError(
+                "Помилка підключення",
+                "Неможливо підключитися до сервера. Перевірте інтернет-з'єднання.");
+          } else {
+            dialogs.showError("Помилка", errorMsg);
+          }
         });
-    new Thread(task).start();
+    Thread t = new Thread(task, "team-load-all");
+    t.setDaemon(true);
+    t.start();
   }
 
   // =====================================================================

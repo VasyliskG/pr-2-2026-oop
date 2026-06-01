@@ -19,18 +19,20 @@ spring:
     # ---- HikariCP Connection Pool ----
     hikari:
       pool-name: CollabHikariPool
-      minimum-idle: 2
-      maximum-pool-size: 10
-      idle-timeout: 300000        # 5 хвилин
-      max-lifetime: 600000        # 10 хвилин
-      connection-timeout: 20000   # 20 секунд
-      leak-detection-threshold: 30000
+      minimum-idle: 3
+      maximum-pool-size: 15
+      idle-timeout: 600000        # 10 хвилин
+      max-lifetime: 1800000       # 30 хвилин
+      connection-timeout: 30000   # 30 секунд
+      leak-detection-threshold: 60000
       connection-test-query: SELECT 1
       auto-commit: false
       data-source-properties:
         ssl: true
         sslmode: verify-ca
         sslrootcert: ${app.ssl.cert:${user.home}/.postgresql/root.crt}
+        connectTimeout: 10
+        socketTimeout: 30
 
   # ---- Ініціалізація схеми (для розробки) ----
   sql:

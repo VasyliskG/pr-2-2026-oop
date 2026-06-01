@@ -130,31 +130,35 @@ public class TeamViewModel {
     return new Task<>() {
       @Override
       protected Void call() {
-        List<TaskDto> allTasks = taskService.getByTeam(teamId);
-        List<ChatMessageDto> msgs = chatService.getRecentMessages(teamId, 0);
-        List<FileDto> teamFiles = fileService.getByTeam(teamId);
-        List<TeamMemberDto> teamMembers = teamService.getMembers(teamId);
-        List<UserWorkloadDto> workloads = teamService.getMemberWorkloads(teamId);
-        TeamStatsDto teamStats = teamService.getStatistics(teamId);
+        try {
+          List<TaskDto> allTasks = taskService.getByTeam(teamId);
+          List<ChatMessageDto> msgs = chatService.getRecentMessages(teamId, 0);
+          List<FileDto> teamFiles = fileService.getByTeam(teamId);
+          List<TeamMemberDto> teamMembers = teamService.getMembers(teamId);
+          List<UserWorkloadDto> workloads = teamService.getMemberWorkloads(teamId);
+          TeamStatsDto teamStats = teamService.getStatistics(teamId);
 
-        // Оновлення UI у потоці JavaFX
-        javafx.application.Platform.runLater(
-            () -> {
-              todoTasks.setAll(
-                  allTasks.stream().filter(t -> t.status() == TaskStatus.TODO).toList());
-              inProgressTasks.setAll(
-                  allTasks.stream().filter(t -> t.status() == TaskStatus.IN_PROGRESS).toList());
-              doneTasks.setAll(
-                  allTasks.stream().filter(t -> t.status() == TaskStatus.DONE).toList());
+          // Оновлення UI у потоці JavaFX
+          javafx.application.Platform.runLater(
+              () -> {
+                todoTasks.setAll(
+                    allTasks.stream().filter(t -> t.status() == TaskStatus.TODO).toList());
+                inProgressTasks.setAll(
+                    allTasks.stream().filter(t -> t.status() == TaskStatus.IN_PROGRESS).toList());
+                doneTasks.setAll(
+                    allTasks.stream().filter(t -> t.status() == TaskStatus.DONE).toList());
 
-              chatMessages.setAll(msgs);
-              files.setAll(teamFiles);
-              members.setAll(teamMembers);
-              memberWorkloads.setAll(workloads);
-              stats.set(teamStats);
-            });
+                chatMessages.setAll(msgs);
+                files.setAll(teamFiles);
+                members.setAll(teamMembers);
+                memberWorkloads.setAll(workloads);
+                stats.set(teamStats);
+              });
 
-        return null;
+          return null;
+        } catch (Exception e) {
+          throw new RuntimeException("Помилка завантаження даних команди", e);
+        }
       }
     };
   }
