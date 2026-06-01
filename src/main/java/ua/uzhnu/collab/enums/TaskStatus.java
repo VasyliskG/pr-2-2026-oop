@@ -6,10 +6,9 @@ package ua.uzhnu.collab.enums;
  * <p>Допустимі переходи стану (state machine):
  * <pre>
  *   TODO ──→ IN_PROGRESS ──→ DONE
- *    ↑            ↕
- *    └────────────┘
+ *    ↑            ↕           ↕
+ *    └────────────┘───────────┘
  * </pre>
- * Перехід {@code DONE → TODO} заборонений.
  *
  * @see ua.uzhnu.collab.service.TaskService#changeStatus
  */
